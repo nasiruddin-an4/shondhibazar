@@ -4,6 +4,7 @@ import HeroContainer from "@/components/Home/Hero/HeroContainer";
 import PopularProducts from "@/components/Home/PopularProducts/PopularProducts";
 import SafeFoodEndeavor from "@/components/Home/SafeFoodEndeavor/SafeFoodEndeavor";
 import SignatureItems from "@/components/Home/SignatureItems/SignatureItems";
+import TrustSections from "@/components/Home/TrustSections/TrustSections";
 
 export default function Home() {
   return (
@@ -14,6 +15,7 @@ export default function Home() {
       <SafeFoodEndeavor />
       <CommunityFarmers />
       <PopularProducts />
+      <TrustSections />
     </div>
   );
 }

@@ -7,3 +7,38 @@
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
   }
 }
+
+/* styles/slick-custom.css */
+.slick-prev,
+.slick-next {
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+}
+
+.slick-prev {
+  left: -40px;
+}
+
+.slick-next {
+  right: -40px;
+}
+
+.slick-prev:before,
+.slick-next:before {
+  color: #666;
+  font-size: 24px;
+}
+
+.slick-dots {
+  bottom: -30px;
+}
+
+.slick-dots li button:before {
+  font-size: 8px;
+  color: #999;
+}
+
+.slick-dots li.slick-active button:before {
+  color: #059669;
+}
