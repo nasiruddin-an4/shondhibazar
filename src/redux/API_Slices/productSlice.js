@@ -127,44 +127,29 @@ const productSlice = createSlice({
     },
     addToCart: (state, action) => {
       const { productId, size, quantity } = action.payload;
-      const product = state.products.find((p) => p.id === productId);
-      const sizeOption = product.sizes.find((s) => s.size === size);
 
-      const existingCartItem = state.cart.find(
+      // Check if item already exists in cart
+      const existingItemIndex = state.cart.findIndex(
         (item) => item.productId === productId && item.size === size
       );
 
-      if (existingCartItem) {
-        existingCartItem.quantity += quantity;
+      if (existingItemIndex >= 0) {
+        // Update quantity if item exists
+        state.cart[existingItemIndex].quantity += quantity;
       } else {
+        // Add new item if it doesn't exist
         state.cart.push({
           productId,
           size,
           quantity,
-          price: sizeOption.price,
-          name: product.name,
-          image: product.image,
+          price: state.products
+            .find((p) => p.id === productId)
+            .sizes.find((s) => s.size === size).price,
         });
-      }
-    },
-    removeFromCart: (state, action) => {
-      const { productId, size } = action.payload;
-      state.cart = state.cart.filter(
-        (item) => !(item.productId === productId && item.size === size)
-      );
-    },
-    updateQuantity: (state, action) => {
-      const { productId, size, quantity } = action.payload;
-      const cartItem = state.cart.find(
-        (item) => item.productId === productId && item.size === size
-      );
-      if (cartItem) {
-        cartItem.quantity = quantity;
       }
     },
   },
 });
 
-export const { selectSize, addToCart, removeFromCart, updateQuantity } =
-  productSlice.actions;
+export const { selectSize, addToCart } = productSlice.actions;
 export default productSlice.reducer;

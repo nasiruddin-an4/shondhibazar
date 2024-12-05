@@ -12,9 +12,14 @@ const ProductCard = ({ product }) => {
     (state) => state.products.selectedSize[product.id]
   );
   const [quantity, setQuantity] = useState(1);
+  const [showQuantity, setShowQuantity] = useState(false);
 
   const getCurrentPrice = () => {
-    if (!selectedSize) return null;
+    if (!selectedSize) {
+      // Get the first size option as default
+      const defaultSize = product.sizes[0];
+      return defaultSize ? defaultSize.price * quantity : null;
+    }
     const sizeOption = product.sizes.find((s) => s.size === selectedSize);
     return sizeOption ? sizeOption.price * quantity : null;
   };
@@ -30,15 +35,17 @@ const ProductCard = ({ product }) => {
   };
 
   const handleAddToCart = () => {
-    if (selectedSize) {
-      dispatch(
-        addToCart({
-          productId: product.id,
-          size: selectedSize,
-          quantity,
-        })
-      );
-    }
+    // If no size is selected, use the first size option
+    const sizeToUse = selectedSize || product.sizes[0].size;
+    dispatch(
+      addToCart({
+        productId: product.id,
+        size: sizeToUse,
+        quantity,
+      })
+    );
+    setShowQuantity(false);
+    setQuantity(1);
   };
 
   return (
@@ -68,7 +75,7 @@ const ProductCard = ({ product }) => {
       <div className="p-4">
         {/* Categories */}
         <div className="flex flex-wrap gap-1 mb-2">
-          {product.categories.map((cat, idx) => (
+          {product?.categories?.map((cat, idx) => (
             <span key={idx} className="text-xs text-gray-500">
               {cat}
               {idx < product.categories.length - 1 && ", "}
@@ -81,15 +88,9 @@ const ProductCard = ({ product }) => {
 
         {/* Price Range */}
         <div className="mb-3">
-          {selectedSize ? (
-            <span className="text-green-600 font-medium">
-              {getCurrentPrice()?.toFixed(2)}৳
-            </span>
-          ) : (
-            <span className="text-green-600 font-medium">
-              {product.price.min.toFixed(2)}৳ - {product.price.max.toFixed(2)}৳
-            </span>
-          )}
+          <span className="text-green-600 font-medium">
+            {getCurrentPrice()?.toFixed(2)}৳
+          </span>
         </div>
 
         {/* Size Options */}
@@ -110,7 +111,7 @@ const ProductCard = ({ product }) => {
         </div>
 
         {/* Add to Cart Controls */}
-        {selectedSize ? (
+        {showQuantity ? (
           <div className="flex h-12">
             <button
               onClick={() => handleQuantityChange(-1)}
@@ -144,12 +145,15 @@ const ProductCard = ({ product }) => {
             </button>
           </div>
         ) : (
-          <button
-            className="w-full h-12 rounded-md bg-gray-100 text-gray-400 cursor-not-allowed"
-            disabled
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setShowQuantity(true)}
+            className="w-full h-12 rounded-md bg-gray-200 hover:bg-green-500  text-white flex items-center justify-center gap-2 transition-colors"
           >
-            Select size first
-          </button>
+            <ShoppingCart size={18} />
+            <span>Add to Cart</span>
+          </motion.button>
         )}
       </div>
     </motion.div>
