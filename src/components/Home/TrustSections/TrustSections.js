@@ -87,14 +87,85 @@ const marketplaces = [
 ];
 
 const TrustSections = () => {
+  const NextArrow = ({ onClick }) => (
+    <button
+      onClick={onClick}
+      className="absolute right-[-20px] top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white shadow-md hover:bg-gray-50 transition-all"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="text-gray-600"
+      >
+        <path d="m9 18 6-6-6-6" />
+      </svg>
+    </button>
+  );
+
+  const PrevArrow = ({ onClick }) => (
+    <button
+      onClick={onClick}
+      className="absolute left-[-20px] top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white shadow-md hover:bg-gray-50 transition-all"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="text-gray-600"
+      >
+        <path d="m15 18-6-6 6-6" />
+      </svg>
+    </button>
+  );
+  const additionalStyles = `
+  .slick-slider {
+    position: relative;
+    padding: 0 25px;
+  }
+
+  .slick-arrow {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .slick-slider:hover .slick-arrow {
+    opacity: 1;
+  }
+
+  .slick-arrow.slick-disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  @media (max-width: 640px) {
+    .slick-arrow {
+      display: none !important;
+    }
+  }`;
+
   const sliderSettings = {
-    dots: true,
+    dots: false,
     infinite: true,
     speed: 500,
     slidesToShow: 5,
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 3000,
+    nextArrow: <NextArrow />,
+    prevArrow: <PrevArrow />,
     responsive: [
       {
         breakpoint: 1024,
