@@ -2,21 +2,61 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Minus, ShoppingCart } from "lucide-react";
 import {
   selectSize,
   addToCart,
   updateCartQuantity,
+  removeFromCart,
 } from "@/redux/API_Slices/productSlice";
+import { NumberCounter } from "@/lib/NumberCounter";
 
-const ProductCard = ({ product }) => {
+const ProductCardSkeleton = () => (
+  <div className="bg-white rounded-lg overflow-hidden shadow-sm">
+    {/* Image Skeleton */}
+    <div className="relative h-[15rem] bg-gray-200 animate-pulse" />
+
+    {/* Content */}
+    <div className="p-4 space-y-4">
+      {/* Categories Skeleton */}
+      <div className="flex gap-2">
+        <div className="h-4 w-16 bg-gray-200 rounded animate-pulse" />
+        <div className="h-4 w-20 bg-gray-200 rounded animate-pulse" />
+      </div>
+
+      {/* Title Skeleton */}
+      <div className="space-y-2">
+        <div className="h-5 w-3/4 bg-gray-200 rounded animate-pulse" />
+        <div className="h-5 w-1/2 bg-gray-200 rounded animate-pulse" />
+      </div>
+
+      {/* Price Skeleton */}
+      <div className="h-6 w-32 bg-gray-200 rounded animate-pulse" />
+
+      {/* Size Options Skeleton */}
+      <div className="flex gap-2">
+        {[1, 2, 3].map((i) => (
+          <div
+            key={i}
+            className="h-8 w-16 bg-gray-200 rounded-md animate-pulse"
+          />
+        ))}
+      </div>
+
+      {/* Button Skeleton */}
+      <div className="h-12 w-full bg-gray-200 rounded-md animate-pulse" />
+    </div>
+  </div>
+);
+const ProductCard = ({ product, isLoading = false }) => {
   const dispatch = useDispatch();
   const selectedSize = useSelector(
     (state) => state.products.selectedSize[product.id]
   );
   const cartItems = useSelector((state) => state.products.cart);
   const [quantity, setQuantity] = useState(1);
+  const [showPrice, setShowPrice] = useState(false);
 
   // Find cart item
   const cartItem = cartItems.find(
@@ -31,6 +71,17 @@ const ProductCard = ({ product }) => {
       setQuantity(1);
     }
   }, [cartItem]);
+
+  // Show price temporarily when quantity changes
+  useEffect(() => {
+    if (cartItem) {
+      setShowPrice(true);
+      const timer = setTimeout(() => {
+        setShowPrice(false);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [quantity, cartItem]);
 
   const getCurrentPrice = () => {
     if (!selectedSize) {
@@ -47,17 +98,26 @@ const ProductCard = ({ product }) => {
   };
 
   const handleQuantityChange = (change) => {
-    const newQuantity = Math.max(1, quantity + change);
+    const newQuantity = Math.max(0, quantity + change);
     setQuantity(newQuantity);
 
     if (cartItem) {
-      dispatch(
-        updateCartQuantity({
-          productId: product.id,
-          size: selectedSize,
-          quantity: newQuantity,
-        })
-      );
+      if (newQuantity === 0) {
+        dispatch(
+          removeFromCart({
+            productId: product.id,
+            size: selectedSize,
+          })
+        );
+      } else {
+        dispatch(
+          updateCartQuantity({
+            productId: product.id,
+            size: selectedSize,
+            quantity: newQuantity,
+          })
+        );
+      }
     }
   };
 
@@ -85,16 +145,24 @@ const ProductCard = ({ product }) => {
   };
 
   const isInCart = cartItem !== undefined;
+  const totalPrice = getCurrentPrice();
+  const unitPrice = totalPrice ? totalPrice / quantity : null;
 
+  if (isLoading) {
+    return <ProductCardSkeleton />;
+  }
   return (
     <motion.div
-      className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+      className="bg-white rounded-lg overflow-hidden shadow-sm border hover:shadow-md transition-shadow "
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ duration: 0.3 }}
     >
       {/* Product Image */}
-      <div className="relative aspect-square overflow-hidden">
+      <div className="relative  h-[15rem] overflow-hidden">
         {product.discount && (
           <div className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 text-xs rounded">
             -{product.discount}%
@@ -122,13 +190,14 @@ const ProductCard = ({ product }) => {
         </div>
 
         {/* Name */}
-        <h3 className="text-lg font-medium mb-2">{product.name}</h3>
+        <h3 className="text-lg font-medium mb-2 ">{product.name}</h3>
 
         {/* Price Range */}
         <div className="mb-3">
           {isInCart || selectedSize ? (
             <span className="text-green-600 font-medium">
-              {getCurrentPrice()?.toFixed(2)}৳
+              {quantity} × {unitPrice?.toFixed(2)}৳
+              {/* {getCurrentPrice()?.toFixed(2)}৳ */}
             </span>
           ) : (
             <span className="text-green-600 font-medium">
@@ -156,37 +225,47 @@ const ProductCard = ({ product }) => {
 
         {/* Add to Cart Controls */}
         {isInCart ? (
-          <div className="flex h-12">
-            <button
-              onClick={() => handleQuantityChange(-1)}
-              className={`w-12 flex items-center justify-center rounded-l-md ${
-                quantity <= 1
-                  ? "bg-gray-100 text-gray-400"
-                  : "bg-green-500 text-white hover:bg-green-600"
-              }`}
-              disabled={quantity <= 1}
-            >
-              <Minus size={18} />
-            </button>
-
+          <div className="flex h-12 gap-4">
+            <div className="flex w-24 space-x-2 border rounded-md px-2">
+              <button
+                onClick={() => handleQuantityChange(-1)}
+                className="w-10 flex items-center justify-center text-black"
+              >
+                <Minus size={16} />
+              </button>
+              <div className="w-10 flex items-center justify-center">
+                {quantity}
+              </div>
+              <button
+                onClick={() => handleQuantityChange(1)}
+                className="w-10 flex items-center justify-center text-black"
+              >
+                <Plus size={16} />
+              </button>
+            </div>
             <motion.button
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.99 }}
-              onClick={handleAddToCart}
-              className="flex-1 bg-green-500 hover:bg-green-600 text-white flex items-center justify-center gap-2 font-medium"
+              onClick={() => handleQuantityChange(1)}
+              className="flex-1 rounded-md bg-green-500 hover:bg-green-600 text-white flex items-center justify-center gap-2 font-medium"
             >
               <ShoppingCart size={18} />
-              <span>
-                {quantity} × {getCurrentPrice()?.toFixed(2)}৳
-              </span>
+              <motion.span
+                key={showPrice ? "price" : "text"}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                {showPrice ? (
+                  <>
+                    <NumberCounter value={totalPrice} />৳
+                  </>
+                ) : (
+                  "Add more"
+                )}
+              </motion.span>
             </motion.button>
-
-            <button
-              onClick={() => handleQuantityChange(1)}
-              className="w-12 flex items-center justify-center bg-green-500 text-white hover:bg-green-600 rounded-r-md"
-            >
-              <Plus size={18} />
-            </button>
           </div>
         ) : (
           <motion.button
@@ -201,7 +280,11 @@ const ProductCard = ({ product }) => {
             } flex items-center justify-center gap-2 transition-colors`}
           >
             <ShoppingCart size={18} />
-            <span>Add to Cart</span>
+            {selectedSize ? (
+              <span>Add to Cart</span>
+            ) : (
+              <span>Select Weight</span>
+            )}
           </motion.button>
         )}
       </div>

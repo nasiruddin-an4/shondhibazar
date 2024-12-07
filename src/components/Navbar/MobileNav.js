@@ -3,8 +3,17 @@
 import { Menu, ShoppingCart } from "lucide-react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { useSelector } from "react-redux";
+import { NumberCounter } from "@/lib/NumberCounter";
 
 const MobileNav = ({ onOpenCart, onOpenMenu }) => {
+  const cart = useSelector((state) => state.products.cart);
+  const products = useSelector((state) => state.products.products);
+
+  // Calculate cart total
+  const cartTotal = cart.reduce((total, item) => {
+    return total + item.price * item.quantity;
+  }, 0);
   return (
     <div className="lg:hidden fixed top-0 left-0 right-0 bg-white shadow-md z-40">
       <div className="flex items-center justify-between px-4 py-3">
@@ -32,7 +41,7 @@ const MobileNav = ({ onOpenCart, onOpenMenu }) => {
           className="flex items-center space-x-2 p-2 hover:bg-gray-100 rounded-lg group"
         >
           <span className="text-gray-900 group-hover:text-green-600 transition-colors">
-            2,250.00৳
+            <NumberCounter value={cartTotal} /> ৳
           </span>
           <ShoppingCart
             size={20}

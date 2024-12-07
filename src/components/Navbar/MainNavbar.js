@@ -5,6 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { ShoppingCart, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useSelector } from "react-redux";
+import { NumberCounter } from "@/lib/NumberCounter";
 
 const menuItems = [
   {
@@ -35,17 +37,20 @@ const menuItems = [
 
 const moreItems = ["Beverages", "Snacks", "Personal Care", "Household"];
 
-const CartButton = ({ onOpenCart }) => (
+const CartButton = ({ onOpenCart, cartTotal }) => (
   <motion.button
     whileHover={{ scale: 1.05, color: "#059669" }}
     whileTap={{ scale: 0.95 }}
     onClick={onOpenCart}
-    className="flex items-center space-x-2 transition-all duration-300 group"
+    className=" w-32 flex items-center space-x-2 transition-all duration-300 group"
   >
-    <span className="font-medium group-hover:text-green-600">2,250.00৳</span>
+    <p className=" w-24  font-medium group-hover:text-green-600">
+      {" "}
+      <NumberCounter value={cartTotal} />৳
+    </p>
     <ShoppingCart
       size={20}
-      className="group-hover:text-green-600 transition-colors duration-300"
+      className="  group-hover:text-green-600 transition-colors duration-300"
     />
   </motion.button>
 );
@@ -53,6 +58,14 @@ const CartButton = ({ onOpenCart }) => (
 const MainNavbar = ({ onOpenCart }) => {
   const [isSticky, setIsSticky] = useState(false);
   const [hoveredItem, setHoveredItem] = useState();
+
+  const cart = useSelector((state) => state.products.cart);
+  const products = useSelector((state) => state.products.products);
+
+  // Calculate cart total
+  const cartTotal = cart.reduce((total, item) => {
+    return total + item.price * item.quantity;
+  }, 0);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -183,7 +196,7 @@ const MainNavbar = ({ onOpenCart }) => {
             <ShoppingCart size={20} className="text-green-600" />
             <span className="font-medium">2,250.00৳</span>
           </div> */}
-          <CartButton onOpenCart={onOpenCart} />
+          <CartButton cartTotal={cartTotal} onOpenCart={onOpenCart} />
         </div>
       </div>
     </motion.nav>
