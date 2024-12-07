@@ -1,22 +1,39 @@
 // components/products/ProductCard.js
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { motion } from "framer-motion";
 import { Plus, Minus, ShoppingCart } from "lucide-react";
-import { selectSize, addToCart } from "@/redux/API_Slices/productSlice";
+import {
+  selectSize,
+  addToCart,
+  updateCartQuantity,
+} from "@/redux/API_Slices/productSlice";
 
 const ProductCard = ({ product }) => {
   const dispatch = useDispatch();
   const selectedSize = useSelector(
     (state) => state.products.selectedSize[product.id]
   );
+  const cartItems = useSelector((state) => state.products.cart);
   const [quantity, setQuantity] = useState(1);
-  const [showQuantity, setShowQuantity] = useState(false);
+
+  // Find cart item
+  const cartItem = cartItems.find(
+    (item) => item.productId === product.id && item.size === selectedSize
+  );
+
+  // Update local quantity when cart changes
+  useEffect(() => {
+    if (cartItem) {
+      setQuantity(cartItem.quantity);
+    } else {
+      setQuantity(1);
+    }
+  }, [cartItem]);
 
   const getCurrentPrice = () => {
     if (!selectedSize) {
-      // Get the first size option as default
       const defaultSize = product.sizes[0];
       return defaultSize ? defaultSize.price * quantity : null;
     }
@@ -32,21 +49,42 @@ const ProductCard = ({ product }) => {
   const handleQuantityChange = (change) => {
     const newQuantity = Math.max(1, quantity + change);
     setQuantity(newQuantity);
+
+    if (cartItem) {
+      dispatch(
+        updateCartQuantity({
+          productId: product.id,
+          size: selectedSize,
+          quantity: newQuantity,
+        })
+      );
+    }
   };
 
   const handleAddToCart = () => {
-    // If no size is selected, use the first size option
-    const sizeToUse = selectedSize || product.sizes[0].size;
-    dispatch(
-      addToCart({
-        productId: product.id,
-        size: sizeToUse,
-        quantity,
-      })
-    );
-    setShowQuantity(false);
-    setQuantity(1);
+    if (selectedSize || product.sizes[0]) {
+      const sizeToUse = selectedSize || product.sizes[0].size;
+      if (cartItem) {
+        dispatch(
+          updateCartQuantity({
+            productId: product.id,
+            size: sizeToUse,
+            quantity,
+          })
+        );
+      } else {
+        dispatch(
+          addToCart({
+            productId: product.id,
+            size: sizeToUse,
+            quantity,
+          })
+        );
+      }
+    }
   };
+
+  const isInCart = cartItem !== undefined;
 
   return (
     <motion.div
@@ -88,9 +126,15 @@ const ProductCard = ({ product }) => {
 
         {/* Price Range */}
         <div className="mb-3">
-          <span className="text-green-600 font-medium">
-            {getCurrentPrice()?.toFixed(2)}৳
-          </span>
+          {isInCart || selectedSize ? (
+            <span className="text-green-600 font-medium">
+              {getCurrentPrice()?.toFixed(2)}৳
+            </span>
+          ) : (
+            <span className="text-green-600 font-medium">
+              {product.price.min.toFixed(2)}৳ - {product.price.max.toFixed(2)}৳
+            </span>
+          )}
         </div>
 
         {/* Size Options */}
@@ -111,7 +155,7 @@ const ProductCard = ({ product }) => {
         </div>
 
         {/* Add to Cart Controls */}
-        {showQuantity ? (
+        {isInCart ? (
           <div className="flex h-12">
             <button
               onClick={() => handleQuantityChange(-1)}
@@ -148,8 +192,13 @@ const ProductCard = ({ product }) => {
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            onClick={() => setShowQuantity(true)}
-            className="w-full h-12 rounded-md bg-gray-200 hover:bg-green-500  text-white flex items-center justify-center gap-2 transition-colors"
+            onClick={handleAddToCart}
+            disabled={!selectedSize}
+            className={`w-full h-12 rounded-md ${
+              selectedSize
+                ? "bg-green-500 hover:bg-green-600 text-white"
+                : "bg-gray-200 text-gray-400 cursor-not-allowed"
+            } flex items-center justify-center gap-2 transition-colors`}
           >
             <ShoppingCart size={18} />
             <span>Add to Cart</span>
