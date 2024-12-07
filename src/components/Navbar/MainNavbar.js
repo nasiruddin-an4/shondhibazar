@@ -123,7 +123,7 @@ const MainNavbar = ({ onOpenCart }) => {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
                       transition={{ duration: 0.2 }}
-                      className="absolute top-full left-0 bg-white shadow-lg rounded-lg py-2 w-48"
+                      className="absolute top-full left-0 z-20 bg-white shadow-lg rounded-lg py-2 w-48"
                     >
                       {item.submenu.map((subItem) => (
                         <Link
@@ -161,7 +161,7 @@ const MainNavbar = ({ onOpenCart }) => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
                     transition={{ duration: 0.2 }}
-                    className="absolute top-full right-0 bg-white shadow-lg rounded-lg py-2 w-48"
+                    className="absolute top-full z-20 right-0 bg-white shadow-lg rounded-lg py-2 w-48"
                   >
                     {moreItems.map((item) => (
                       <Link
