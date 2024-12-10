@@ -1,28 +1,58 @@
-import React, { useState } from "react";
-import { X } from "lucide-react";
+"use client";
 
-// Modal Component
+import { X } from "lucide-react";
+import { useEffect, useState } from "react";
+
 const Modal = ({ isOpen, onClose, title, children }) => {
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
-      <div className="flex min-h-screen items-center justify-center p-4">
+      {/* Backdrop */}
+      <div className="fixed inset-0 backdrop-blur-sm bg-black/30 transition-opacity" />
+
+      {/* Modal Container */}
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0" onClick={onClose} aria-hidden="true" />
+
+        {/* Modal Content */}
         <div
-          className="fixed inset-0 bg-black bg-opacity-25"
-          onClick={onClose}
-        ></div>
-        <div className="relative bg-white rounded-lg w-full max-w-md p-6">
+          className="relative w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all 
+          animate-in fade-in-0 zoom-in-95 duration-300
+          dark:bg-gray-800"
+        >
+          {/* Header */}
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">{title}</h3>
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+              {title}
+            </h3>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-500"
+              className="rounded-full p-1 text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700
+              transition-colors focus:outline-none focus:ring-2 focus:ring-green-500"
             >
+              <span className="sr-only">Close</span>
               <X size={20} />
             </button>
           </div>
-          {children}
+
+          {/* Divider */}
+          <div className="h-px bg-gray-200 dark:bg-gray-700 -mx-6 mb-4" />
+
+          {/* Content */}
+          <div className="relative">{children}</div>
         </div>
       </div>
     </div>
