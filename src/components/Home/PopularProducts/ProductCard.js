@@ -11,6 +11,7 @@ import {
   removeFromCart,
 } from "@/redux/API_Slices/productSlice";
 import { NumberCounter } from "@/lib/NumberCounter";
+import Link from "next/link";
 
 const ProductCardSkeleton = () => (
   <div className="bg-white rounded-lg overflow-hidden shadow-sm">
@@ -190,7 +191,12 @@ const ProductCard = ({ product, isLoading = false }) => {
         </div>
 
         {/* Name */}
-        <h3 className="text-lg font-medium mb-2 ">{product.name}</h3>
+        <Link
+          href={`/details/${product?.id}`}
+          className=" block text-lg font-medium mb-2 hover:text-green-500 "
+        >
+          {product.name}
+        </Link>
 
         {/* Price Range */}
         <div className="mb-3">
