@@ -40,7 +40,7 @@ const Additional = ({ product }) => {
 
   useEffect(() => {
     // Simulate loading time
-    const timer = setTimeout(() => setIsLoading(false), 1500);
+    const timer = setTimeout(() => setIsLoading(false), 300);
     return () => clearTimeout(timer);
   }, []);
 
