@@ -2,9 +2,52 @@
 
 import { X } from "lucide-react";
 import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
+const ReviewsSkeleton = () => (
+  <div className="space-y-12 animate-pulse">
+    {/* Summary Card Skeleton */}
+    <div className="bg-white rounded-xl shadow-sm">
+      <div className="flex flex-col md:flex-row items-center gap-8 p-8">
+        <div className="text-center md:border-r md:pr-8 md:w-48">
+          <div className="h-16 w-24 bg-gray-200 rounded-lg mx-auto mb-2" />
+          <div className="h-8 w-32 bg-gray-200 rounded-lg mx-auto mb-2" />
+          <div className="h-4 w-40 bg-gray-200 rounded-lg mx-auto" />
+        </div>
+        <div className="flex-1 w-full max-w-md space-y-2">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="flex items-center gap-3">
+              <div className="w-20 h-4 bg-gray-200 rounded" />
+              <div className="flex-1 h-2.5 bg-gray-200 rounded-full" />
+              <div className="w-16 h-4 bg-gray-200 rounded" />
+            </div>
+          ))}
+        </div>
+        <div className="md:border-l md:pl-8">
+          <div className="h-12 w-32 bg-gray-200 rounded-lg" />
+        </div>
+      </div>
+    </div>
+
+    {/* Reviews List Skeleton */}
+    {[1, 2, 3].map((i) => (
+      <div key={i} className="bg-white rounded-xl shadow-sm p-6">
+        <div className="flex items-start gap-3 mb-4">
+          <div className="w-10 h-10 rounded-full bg-gray-200" />
+          <div className="flex-1">
+            <div className="h-5 w-32 bg-gray-200 rounded mb-2" />
+            <div className="h-4 w-24 bg-gray-200 rounded" />
+          </div>
+        </div>
+        <div className="space-y-2">
+          <div className="h-4 w-full bg-gray-200 rounded" />
+          <div className="h-4 w-3/4 bg-gray-200 rounded" />
+        </div>
+      </div>
+    ))}
+  </div>
+);
 const Modal = ({ isOpen, onClose, title, children }) => {
-  // Prevent body scroll when modal is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
@@ -16,46 +59,54 @@ const Modal = ({ isOpen, onClose, title, children }) => {
     };
   }, [isOpen]);
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      {/* Backdrop */}
-      <div className="fixed inset-0 backdrop-blur-sm bg-black/30 transition-opacity" />
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 backdrop-blur-sm bg-black/30"
+          />
 
-      {/* Modal Container */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div className="fixed inset-0" onClick={onClose} aria-hidden="true" />
-
-        {/* Modal Content */}
-        <div
-          className="relative w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 shadow-xl transition-all 
-          animate-in fade-in-0 zoom-in-95 duration-300
-          dark:bg-gray-800"
-        >
-          {/* Header */}
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-              {title}
-            </h3>
-            <button
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div
+              className="fixed inset-0"
               onClick={onClose}
-              className="rounded-full p-1 text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700
-              transition-colors focus:outline-none focus:ring-2 focus:ring-green-500"
+              aria-hidden="true"
+            />
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ type: "spring", duration: 0.5 }}
+              className="relative w-full max-w-md overflow-hidden rounded-2xl bg-white p-6 shadow-xl dark:bg-gray-800"
             >
-              <span className="sr-only">Close</span>
-              <X size={20} />
-            </button>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                  {title}
+                </h3>
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={onClose}
+                  className="rounded-full p-1 text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700
+                  transition-colors focus:outline-none focus:ring-2 focus:ring-green-500"
+                >
+                  <span className="sr-only">Close</span>
+                  <X size={20} />
+                </motion.button>
+              </div>
+
+              <div className="h-px bg-gray-200 dark:bg-gray-700 -mx-6 mb-4" />
+              <div className="relative">{children}</div>
+            </motion.div>
           </div>
-
-          {/* Divider */}
-          <div className="h-px bg-gray-200 dark:bg-gray-700 -mx-6 mb-4" />
-
-          {/* Content */}
-          <div className="relative">{children}</div>
         </div>
-      </div>
-    </div>
+      )}
+    </AnimatePresence>
   );
 };
 
@@ -170,6 +221,13 @@ const Reviews = ({ reviews: initialReviews }) => {
   const [isReviewModalOpen, setReviewModalOpen] = useState(false);
   const [activeReplyId, setActiveReplyId] = useState(null);
   const [reviews, setReviews] = useState(initialReviews);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate loading time
+    const timer = setTimeout(() => setIsLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleReviewSubmit = (reviewData) => {
     const newReview = {
@@ -204,7 +262,9 @@ const Reviews = ({ reviews: initialReviews }) => {
       })
     );
   };
-
+  if (isLoading) {
+    return <ReviewsSkeleton />;
+  }
   return (
     <>
       {/* Write Review Modal */}
@@ -232,9 +292,17 @@ const Reviews = ({ reviews: initialReviews }) => {
       </Modal>
 
       {/* Reviews Content (keeping your original design) */}
-      <div className="space-y-12">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="space-y-12"
+      >
         {/* Reviews Summary Card */}
-        <div className="bg-white rounded-xl shadow-sm">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white rounded-xl shadow-sm"
+        >
           <div className="flex flex-col md:flex-row items-center gap-8 p-8">
             <div className="text-center md:border-r md:pr-8 md:w-48">
               <div className="text-6xl font-bold text-gray-800 mb-2">4.7</div>
@@ -283,12 +351,18 @@ const Reviews = ({ reviews: initialReviews }) => {
               </button>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Reviews List */}
         <div className="space-y-6">
-          {reviews.map((review) => (
-            <div key={review.id} className="bg-white rounded-xl shadow-sm p-6">
+          {reviews.map((review, index) => (
+            <motion.div
+              key={review.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              className="bg-white rounded-xl shadow-sm p-6"
+            >
               {/* Keep your original review content structure */}
               <div className="flex items-start justify-between mb-4">
                 <div>
@@ -320,21 +394,37 @@ const Reviews = ({ reviews: initialReviews }) => {
               </div>
 
               {/* Display replies */}
-              {review.replies && review.replies.length > 0 && (
-                <div className="mt-4 pl-6 border-l-2 space-y-4">
-                  {review.replies.map((reply) => (
-                    <div key={reply.id} className="text-sm text-gray-600">
-                      <div className="font-medium">{reply.author}</div>
-                      <div className="text-gray-400 text-xs">{reply.date}</div>
-                      <div className="mt-1">{reply.text}</div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+
+              <AnimatePresence>
+                {review.replies && review.replies.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="mt-4 pl-6 border-l-2 space-y-4"
+                  >
+                    {review.replies.map((reply, replyIndex) => (
+                      <motion.div
+                        key={reply.id}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: replyIndex * 0.1 }}
+                        className="text-sm text-gray-600"
+                      >
+                        <div className="font-medium">{reply.author}</div>
+                        <div className="text-gray-400 text-xs">
+                          {reply.date}
+                        </div>
+                        <div className="mt-1">{reply.text}</div>
+                      </motion.div>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
           ))}
         </div>
-      </div>
+      </motion.div>
     </>
   );
 };

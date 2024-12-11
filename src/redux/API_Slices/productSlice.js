@@ -53,6 +53,7 @@ const initialState = {
     {
       id: 3,
       name: "পরেশ ঘি [Ghee]",
+      category: "RICE",
       categories: ["ALL PRODUCTS", "OIL & GHEE"],
       price: { min: 550.0, max: 2100.0 },
       sizes: [
@@ -70,6 +71,7 @@ const initialState = {
     {
       id: 4,
       name: "প্রিমিয়াম গাঁওয়া ঘি [Ghee]",
+      category: "RICE",
       categories: ["ALL PRODUCTS", "DIET FOODS", "OIL & GHEE"],
       price: { min: 450.0, max: 1600.0 },
       sizes: [
@@ -86,6 +88,7 @@ const initialState = {
     },
     {
       id: 5,
+      category: "RICE",
       name: "পাওয়া ঘি [Ghee]",
       categories: ["ALL PRODUCTS", "DIET FOODS", "OIL & GHEE"],
       price: { min: 350.0, max: 1300.0 },
@@ -102,6 +105,7 @@ const initialState = {
     {
       id: 6,
       name: "সরষে খাঁটি ভাঙ্গা সরিষার তেল [Extra Virgin Mustard Oil]",
+      category: "RICE",
       categories: ["ALL PRODUCTS", "OIL", "OIL & GHEE"],
       price: { min: 135.0, max: 2300.0 },
       sizes: [
@@ -117,6 +121,7 @@ const initialState = {
     {
       id: 7,
       name: "নিরাপদ মুরগীর মুরগী [Safe Broiler] (Skin Off)",
+      category: "RICE",
       categories: ["CHICKEN & MEAT"],
       price: { min: 480.0, max: 2400.0 },
       sizes: [
@@ -130,6 +135,7 @@ const initialState = {
     {
       id: 8,
       name: "মরিচ গুঁড়া [Chili Powder]",
+      category: "RICE",
       categories: ["SPICE POWDER", "SPICES"],
       price: { min: 45.0, max: 840.0 },
       sizes: [

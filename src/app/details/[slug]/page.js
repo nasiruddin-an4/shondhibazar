@@ -22,6 +22,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect, use } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { motion, AnimatePresence } from "framer-motion";
+import { NumberCounter } from "@/lib/NumberCounter";
+import TabsSection from "@/components/ProductDetails/TabsSection";
 
 const reviews = [
   {
@@ -164,26 +167,60 @@ const relatedProduct = [
   },
 ];
 
+const ProductSkeleton = () => (
+  <div className="container mx-auto px-4 py-8 animate-pulse">
+    <div className="h-6 w-48 bg-gray-200 rounded mb-6" />
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
+      <div className="bg-gray-200 rounded-xl aspect-square" />
+      <div className="space-y-6">
+        <div className="h-8 w-3/4 bg-gray-200 rounded" />
+        <div className="h-6 w-1/4 bg-gray-200 rounded" />
+        <div className="space-y-2">
+          <div className="h-4 w-full bg-gray-200 rounded" />
+          <div className="h-4 w-5/6 bg-gray-200 rounded" />
+          <div className="h-4 w-4/6 bg-gray-200 rounded" />
+        </div>
+        <div className="space-y-4">
+          <div className="h-6 w-1/4 bg-gray-200 rounded" />
+          <div className="flex gap-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-10 w-20 bg-gray-200 rounded" />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const fadeIn = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -20 },
+};
+
 const ProductDetails = ({ params }) => {
   const dispatch = useDispatch();
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState("description");
-  const [isClient, setIsClient] = useState(false);
 
-  // Set isClient to true on component mount
+  const [isClient, setIsClient] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const [showQuantityControls, setShowQuantityControls] = useState(false);
+
   useEffect(() => {
     setIsClient(true);
+    // Simulate loading time
+    setTimeout(() => setIsLoading(false), 1000);
   }, []);
 
-  // Unwrap params using React.use()
   const resolvedParams = use(params);
   const productId = parseInt(resolvedParams.slug);
 
-  // Get product from Redux store using URL param
   const products = useSelector((state) => state.products.products);
   const product = products.find((p) => p.id === productId);
 
-  // Get selected size and cart information
   const selectedSize = useSelector(
     (state) => state.products.selectedSize[productId]
   );
@@ -194,7 +231,10 @@ const ProductDetails = ({ params }) => {
       )
     : null;
 
-  // Update quantity when cart changes
+  const [buttonText, setButtonText] = useState(
+    cartItem ? "Update Cart" : "Add to Cart"
+  );
+
   useEffect(() => {
     if (cartItem) {
       setQuantity(cartItem.quantity);
@@ -203,10 +243,18 @@ const ProductDetails = ({ params }) => {
     }
   }, [cartItem]);
 
+  // const getCurrentPrice = () => {
+  //   if (!selectedSize && product) {
+  //     const defaultSize = product.sizes[0];
+  //     return defaultSize ? defaultSize.price * quantity : null;
+  //   }
+  //   const sizeOption = product?.sizes.find((s) => s.size === selectedSize);
+  //   return sizeOption ? sizeOption.price * quantity : null;
+  // };
+
   const getCurrentPrice = () => {
-    if (!selectedSize && product) {
-      const defaultSize = product.sizes[0];
-      return defaultSize ? defaultSize.price * quantity : null;
+    if (!selectedSize) {
+      return null;
     }
     const sizeOption = product?.sizes.find((s) => s.size === selectedSize);
     return sizeOption ? sizeOption.price * quantity : null;
@@ -215,32 +263,48 @@ const ProductDetails = ({ params }) => {
   const handleSizeSelect = (size) => {
     dispatch(selectSize({ productId, size }));
     setQuantity(1);
+    setShowQuantityControls(true);
   };
 
+  // const handleQuantityChange = (change) => {
+  //   const newQuantity = Math.max(0, quantity + change);
+  //   setQuantity(newQuantity);
+
+  //   if (cartItem) {
+  //     if (newQuantity === 0) {
+  //       dispatch(
+  //         removeFromCart({
+  //           productId,
+  //           size: selectedSize,
+  //         })
+  //       );
+  //     } else {
+  //       dispatch(
+  //         updateCartQuantity({
+  //           productId,
+  //           size: selectedSize,
+  //           quantity: newQuantity,
+  //         })
+  //       );
+  //     }
+  //   }
+  // };
   const handleQuantityChange = (change) => {
-    const newQuantity = Math.max(0, quantity + change);
+    // Set minimum value to 1 instead of 0
+    const newQuantity = Math.max(1, quantity + change);
     setQuantity(newQuantity);
 
     if (cartItem) {
-      if (newQuantity === 0) {
-        dispatch(
-          removeFromCart({
-            productId,
-            size: selectedSize,
-          })
-        );
-      } else {
-        dispatch(
-          updateCartQuantity({
-            productId,
-            size: selectedSize,
-            quantity: newQuantity,
-          })
-        );
-      }
+      // Since minimum is 1, we don't need the newQuantity === 0 check anymore
+      dispatch(
+        updateCartQuantity({
+          productId,
+          size: selectedSize,
+          quantity: newQuantity,
+        })
+      );
     }
   };
-
   const handleAddToCart = () => {
     if (selectedSize || product.sizes[0]) {
       const sizeToUse = selectedSize || product.sizes[0].size;
@@ -262,13 +326,52 @@ const ProductDetails = ({ params }) => {
         );
       }
     }
+    setButtonText("Added!");
+    setTimeout(() => {
+      setButtonText("Add More");
+      setShowQuantityControls(true);
+    }, 3000);
   };
 
-  // Replace the existing error check with this:
+  const isInCart = cartItem !== undefined;
+  const totalPrice = getCurrentPrice();
+  const unitPrice = totalPrice ? totalPrice / quantity : null;
+
+  const handleClear = () => {
+    setShowQuantityControls(false);
+    // Reset quantity to 1
+    setQuantity(1);
+
+    // Remove from cart if it exists
+    if (cartItem) {
+      dispatch(
+        removeFromCart({
+          productId,
+          size: selectedSize,
+        })
+      );
+    }
+
+    // Clear selected size by dispatching null
+    dispatch(selectSize({ productId, size: null }));
+
+    // Force total price recalculation
+    getCurrentPrice(); // This will now return null since selectedSize is null
+  };
+
+  if (isLoading) {
+    return <ProductSkeleton />;
+  }
 
   if (!product) {
     return (
-      <div className="min-h-[70vh] flex items-center justify-center px-4">
+      <motion.div
+        className="min-h-[70vh] flex items-center justify-center px-4"
+        initial="initial"
+        animate="animate"
+        exit="exit"
+        variants={fadeIn}
+      >
         <div className="text-center max-w-md mx-auto py-12 px-4">
           <div className="bg-red-50 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-6">
             <svg
@@ -310,13 +413,23 @@ const ProductDetails = ({ params }) => {
             </Link>
           </div>
         </div>
-      </div>
+      </motion.div>
     );
   }
+
   return (
-    <div className="container mx-auto px-4 py-8">
+    <motion.div
+      className="container mx-auto px-4 py-8"
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      variants={fadeIn}
+    >
       {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-sm text-gray-600 mb-6">
+      <motion.div
+        className="flex items-center gap-2 text-sm text-gray-600 mb-6"
+        variants={fadeIn}
+      >
         <Link href="/" className="hover:text-green-600">
           Home
         </Link>
@@ -326,12 +439,19 @@ const ProductDetails = ({ params }) => {
         </Link>
         <span>/</span>
         <span className="text-gray-400">{product.name}</span>
-      </div>
+      </motion.div>
 
       {/* Main Product Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16">
+      <motion.div
+        className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16"
+        variants={fadeIn}
+      >
         {/* Product Images */}
-        <div>
+        <motion.div
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           <div className="bg-[#faf9f7] rounded-xl p-8 mb-4">
             <Image
               src={product.image}
@@ -341,22 +461,27 @@ const ProductDetails = ({ params }) => {
               className="w-full h-auto object-contain"
             />
           </div>
-        </div>
+        </motion.div>
 
         {/* Product Info */}
-        <div className="space-y-6">
+        <motion.div
+          className="space-y-6"
+          initial={{ opacity: 0, x: 50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           <h1 className="text-3xl font-bold text-gray-800">{product.name}</h1>
 
-          <div className="text-2xl text-green-600 font-bold">
-            {cartItem ? (
-              <span>
-                {quantity} × {(getCurrentPrice() / quantity)?.toFixed(2)}৳ ={" "}
-                {getCurrentPrice()?.toFixed(2)}৳
+          <div className="mb-3">
+            {isInCart || selectedSize ? (
+              <span className="text-green-600 font-medium">
+                {quantity} × {unitPrice?.toFixed(2)}৳
               </span>
             ) : (
-              `${product.price.min.toFixed(2)}৳ - ${product.price.max.toFixed(
-                2
-              )}৳`
+              <span className="text-green-600 font-medium">
+                {product.price.min.toFixed(2)}৳ - {product.price.max.toFixed(2)}
+                ৳
+              </span>
             )}
           </div>
 
@@ -367,12 +492,16 @@ const ProductDetails = ({ params }) => {
           </div>
 
           {/* Weight Selection */}
-          <div className="space-y-4">
-            <h3 className="font-medium text-gray-700">WEIGHT</h3>
+          <motion.div className="space-y-4" variants={fadeIn}>
+            <h3 className="font-medium text-gray-700">
+              WEIGHT {selectedSize && `: ${selectedSize}`}
+            </h3>
             <div className="flex flex-wrap gap-3">
               {product.sizes.map((size) => (
-                <button
+                <motion.button
                   key={size.size}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => handleSizeSelect(size.size)}
                   className={`px-4 py-2 border rounded-md transition-colors ${
                     selectedSize === size.size
@@ -381,32 +510,61 @@ const ProductDetails = ({ params }) => {
                   }`}
                 >
                   {size.size}
-                </button>
+                </motion.button>
               ))}
             </div>
-          </div>
+            {totalPrice && (
+              <div className="flex items-center space-x-8 ">
+                <p className="text-lg font-bold w-32">
+                  <NumberCounter value={Number(totalPrice)} /> ৳
+                </p>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleClear}
+                  className=" underline text-green-500 px-2 py-1 hover:text-red-400"
+                >
+                  Clear
+                </motion.button>
+              </div>
+            )}
+          </motion.div>
 
           {/* Add to Cart Section */}
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex border rounded-md">
-              <button
-                onClick={() => handleQuantityChange(-1)}
-                className="w-12 flex items-center justify-center border-r hover:bg-gray-50"
+          <div className="flex flex-col sm:flex-row gap-4 w-full">
+            {showQuantityControls && (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="flex items-center border rounded-md w-full sm:w-auto h-12 sm:h-10"
               >
-                <Minus size={20} />
-              </button>
-              <span className="w-16 flex items-center justify-center font-medium">
-                {quantity}
-              </span>
-              <button
-                onClick={() => handleQuantityChange(1)}
-                className="w-12 flex items-center justify-center border-l hover:bg-gray-50"
-              >
-                <Plus size={20} />
-              </button>
-            </div>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleQuantityChange(-1)}
+                  className="flex-1 sm:w-12 h-full flex items-center justify-center border-r hover:bg-gray-50 min-w-[48px] active:bg-gray-100"
+                  aria-label="Decrease quantity"
+                >
+                  <Minus size={24} className="text-gray-600" />
+                </motion.button>
+                <span className="flex-1 sm:w-16 h-full flex items-center justify-center font-medium text-lg min-w-[48px]">
+                  {quantity}
+                </span>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleQuantityChange(1)}
+                  className="flex-1 sm:w-12 h-full flex items-center justify-center border-l hover:bg-gray-50 min-w-[48px] active:bg-gray-100"
+                  aria-label="Increase quantity"
+                >
+                  <Plus size={24} className="text-gray-600" />
+                </motion.button>
+              </motion.div>
+            )}
 
-            <button
+            <motion.button
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.95 }}
               onClick={handleAddToCart}
               disabled={!selectedSize}
               className={`flex-1 ${
@@ -414,85 +572,56 @@ const ProductDetails = ({ params }) => {
                   ? "bg-green-500 hover:bg-green-600"
                   : "bg-gray-300 cursor-not-allowed"
               } text-white py-3 px-6 rounded-md 
-              transition-colors font-medium flex items-center justify-center gap-2`}
+    transition-colors font-medium flex items-center justify-center gap-2`}
             >
-              <ShoppingCart size={20} />
-              <span>{cartItem ? "Update Cart" : "Add to Cart"}</span>
-            </button>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={buttonText}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -20 }}
+                  className="flex items-center gap-2"
+                >
+                  <ShoppingCart size={20} />
+                  <span>{buttonText}</span>
+                </motion.div>
+              </AnimatePresence>
+            </motion.button>
           </div>
-
-          {/* Rest of the component remains the same... */}
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       {/* Tabs Section */}
-      <div className="mb-16">
-        {/* Tab Headers */}
-        <div className="border-b mb-8">
-          <div className="flex space-x-8">
-            <button
-              onClick={() => setActiveTab("description")}
-              className={`px-6 py-4 text-lg font-medium relative transition-colors
-          ${
-            activeTab === "description"
-              ? "text-green-600"
-              : "text-gray-500 hover:text-gray-700"
-          }`}
-            >
-              Description
-              {activeTab === "description" && (
-                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-green-500" />
-              )}
-            </button>
-            <button
-              onClick={() => setActiveTab("additional")}
-              className={`px-6 py-4 text-lg font-medium relative transition-colors
-          ${
-            activeTab === "additional"
-              ? "text-green-600"
-              : "text-gray-500 hover:text-gray-700"
-          }`}
-            >
-              Additional information
-              {activeTab === "additional" && (
-                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-green-500" />
-              )}
-            </button>
-            <button
-              onClick={() => setActiveTab("reviews")}
-              className={`px-6 py-4 text-lg font-medium relative transition-colors
-          ${
-            activeTab === "reviews"
-              ? "text-green-600"
-              : "text-gray-500 hover:text-gray-700"
-          }`}
-            >
-              Reviews (0)
-              {activeTab === "reviews" && (
-                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-green-500" />
-              )}
-            </button>
-          </div>
-        </div>
+      <TabsSection
+        product={product}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        reviews={reviews}
+        isLoading={isLoading}
+      />
 
-        {/* Tab Content */}
-        <div className="bg-white rounded-lg p-6">
-          {activeTab === "description" && <Description product={product} />}
-          {activeTab === "additional" && <Additional product={product} />}
-
-          {activeTab === "reviews" && <Reviews reviews={reviews} />}
-        </div>
-      </div>
       {/* Related Products */}
-      <div>
+      <motion.div
+        variants={fadeIn}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+      >
         <h2 className="text-2xl font-bold mb-8">Related products</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {relatedProduct?.map((item) => (
-            <ProductCard key={item.id} product={item} />
+          {relatedProduct?.map((item, index) => (
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+            >
+              <ProductCard product={item} />
+            </motion.div>
           ))}
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 
