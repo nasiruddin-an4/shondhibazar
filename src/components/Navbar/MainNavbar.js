@@ -141,7 +141,7 @@ const MainNavbar = ({ onOpenCart }) => {
                       {item.submenu.map((subItem) => (
                         <Link
                           key={subItem}
-                          href="#"
+                          href="/product-category"
                           className="block px-4 py-2 hover:bg-gray-50 hover:text-green-600 transition-colors"
                         >
                           {subItem}
@@ -179,7 +179,7 @@ const MainNavbar = ({ onOpenCart }) => {
                     {moreItems.map((item) => (
                       <Link
                         key={item}
-                        href="#"
+                        href="/product-category"
                         className="block px-4 py-2 hover:bg-gray-50 hover:text-green-600 transition-colors"
                       >
                         {item}
