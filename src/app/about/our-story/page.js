@@ -117,7 +117,7 @@ const OurStory = () => {
         transition={{ duration: 1 }}
       >
         <Image
-          src="/placeholder.svg"
+          src="/images/banner2.jpg"
           alt="Our Story Hero"
           fill
           className="object-cover"

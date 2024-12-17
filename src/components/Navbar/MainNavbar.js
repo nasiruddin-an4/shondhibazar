@@ -9,18 +9,19 @@ import { useSelector } from "react-redux";
 import { NumberCounter } from "@/lib/NumberCounter";
 
 const menuItems = [
+  // {
+  //   title: "About Store",
+  //   submenu: ["Our Story", "Contact Us", "Locations"],
+  // },
   {
-    title: "About Store",
-    submenu: ["Our Story", "Contact Us", "Locations"],
+    title: "Rice & Grains",
+    submenu: ["Basmati Rice", "Regular Rice", "Pulses"],
   },
   {
     title: "Meat, Fish & Poultry",
     submenu: ["Fresh Fish", "Chicken", "Beef", "Mutton"],
   },
-  {
-    title: "Rice & Grains",
-    submenu: ["Basmati Rice", "Regular Rice", "Pulses"],
-  },
+
   {
     title: "Spices & Hearbs",
     submenu: ["Whole Spices", "Ground Spices", "Fresh Herbs"],
