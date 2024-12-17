@@ -6,9 +6,12 @@ import {
   updateCartQuantity,
   removeFromCart,
 } from "@/redux/API_Slices/productSlice";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const CartDrawer = ({ isOpen, onClose }) => {
   const dispatch = useDispatch();
+  const router = useRouter();
   const cart = useSelector((state) => state.products.cart);
   const products = useSelector((state) => state.products.products);
 
@@ -43,7 +46,10 @@ const CartDrawer = ({ isOpen, onClose }) => {
       })
     );
   };
-
+  const handleCheckout = () => {
+    onClose();
+    router.push("/checkout");
+  };
   return (
     <AnimatePresence>
       {isOpen && (
@@ -145,16 +151,22 @@ const CartDrawer = ({ isOpen, onClose }) => {
                     {cartTotal.toFixed(2)}৳
                   </span>
                 </div>
-                <button
-                  className={`w-full py-3 rounded-lg transition-colors ${
-                    cart.length === 0
-                      ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                      : "bg-green-600 text-white hover:bg-green-700"
-                  }`}
-                  disabled={cart.length === 0}
-                >
-                  Checkout
-                </button>
+                {cart.length === 0 ? (
+                  // Disabled button when cart is empty
+                  <button
+                    className="w-full py-3 rounded-lg bg-gray-200 text-gray-500 cursor-not-allowed"
+                    disabled
+                  >
+                    Checkout
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handleCheckout()}
+                    className="w-full py-3 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors"
+                  >
+                    Checkout
+                  </button>
+                )}
               </div>
             </div>
           </motion.div>

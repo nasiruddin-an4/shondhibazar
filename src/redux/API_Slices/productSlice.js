@@ -257,6 +257,8 @@ const initialState = {
   ],
   selectedSize: {},
   cart: [],
+  loading: false,
+  error: null,
 };
 
 const productSlice = createSlice({
@@ -307,9 +309,26 @@ const productSlice = createSlice({
         (item) => !(item.productId === productId && item.size === size)
       );
     },
+    clearCart: (state) => {
+      state.cart = [];
+      state.selectedSize = {};
+    },
+    setCartLoading: (state, action) => {
+      state.loading = action.payload;
+    },
+    setCartError: (state, action) => {
+      state.error = action.payload;
+    },
   },
 });
 
-export const { selectSize, addToCart, updateCartQuantity, removeFromCart } =
-  productSlice.actions;
+export const {
+  selectSize,
+  addToCart,
+  updateCartQuantity,
+  removeFromCart,
+  clearCart,
+  setCartLoading,
+  setCartError,
+} = productSlice.actions;
 export default productSlice.reducer;
