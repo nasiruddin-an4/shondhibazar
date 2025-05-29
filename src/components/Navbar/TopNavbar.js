@@ -6,9 +6,16 @@ import { Search, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const aboutStoreItems = [
-  { title: "Our Story", link: "/about/our-story" },
-  { title: "Contact Us", link: "/about/contact-us" },
-  { title: "Locations", link: "/about/locations" },
+  { title: "About Shondibazar", link: "/about/" },
+  { title: "From Your Groewer ", link: "/about/safe-food" },
+  { title: "Our Packging ", link: "/about/packaging" },
+  { title: "Our Artisan ", link: "/about/artisan" },
+  { title: "Our Safe Food ", link: "/about/safe-food" },
+  { title: "Founder's Story ", link: "/about/jesmin-akhtar-neela/" },
+  { title: "FAQ ", link: "/about/faq" },
+  // { title: "Our Story", link: "/about/our-story" },
+  // { title: "Contact Us", link: "/about/contact-us" },
+  // { title: "Locations", link: "/about/locations" },
 ];
 
 const TopNavbar = () => {
@@ -82,7 +89,7 @@ const TopNavbar = () => {
                       <Link
                         key={item.title}
                         href={item.link}
-                        className="block px-4 py-2 hover:bg-gray-50 hover:text-green-600 transition-colors"
+                        className="block text-sm px-4 py-1 hover:bg-gray-50 hover:text-green-600 transition-colors"
                       >
                         {item.title}
                       </Link>
