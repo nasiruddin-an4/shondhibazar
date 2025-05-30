@@ -14,14 +14,18 @@ export default function JesminAkhtarNeelaPage() {
   ];
 
   const mediaImages = [
-    "/placeholder.svg?height=200&width=200",
-    "/placeholder.svg?height=200&width=200",
-    "/placeholder.svg?height=200&width=200",
-    "/placeholder.svg?height=200&width=200",
-    "/placeholder.svg?height=200&width=200",
-    "/placeholder.svg?height=200&width=200",
-    "/placeholder.svg?height=200&width=200",
-    "/placeholder.svg?height=200&width=200",
+    "https://shondhibazar.com/wp-content/uploads/2025/05/IMG-20250512-WA0033.jpg",
+    "https://shondhibazar.com/wp-content/uploads/2025/05/IMG-20250512-WA0035.jpg",
+    "https://shondhibazar.com/wp-content/uploads/2025/05/IMG-20250512-WA0030.jpg",
+    "https://shondhibazar.com/wp-content/uploads/2025/05/WhatsApp-Image-2025-05-12-at-16.39.50_44621f94.jpg",
+    "https://shondhibazar.com/wp-content/uploads/2025/05/IMG-20250512-WA0028.jpg",
+    "https://shondhibazar.com/wp-content/uploads/2025/05/IMG-20250512-WA0031.jpg",
+    "https://shondhibazar.com/wp-content/uploads/2025/05/WhatsApp-Image-2025-05-12-at-16.36.29_bbbb6765.jpg",
+    "https://shondhibazar.com/wp-content/uploads/2025/05/IMG-20250512-WA0024.jpg",
+    "https://shondhibazar.com/wp-content/uploads/2025/05/IMG-20250512-WA0025.jpg",
+    "https://shondhibazar.com/wp-content/uploads/2025/05/IMG-20250512-WA0021.jpg",
+    "https://shondhibazar.com/wp-content/uploads/2025/05/IMG-20250512-WA0022.jpg",
+    "https://shondhibazar.com/wp-content/uploads/2025/05/IMG-20250512-WA0023.jpg",
   ];
 
   return (
@@ -69,7 +73,7 @@ export default function JesminAkhtarNeelaPage() {
 
             <div className="text-center">
               <img
-                src="/placeholder.svg?height=300&width=250"
+                src="https://shondhibazar.com/wp-content/uploads/2025/05/Untitled-design-374x374.webp"
                 alt="Jesmin Akhtar Neela"
                 className="rounded-lg shadow-lg mx-auto mb-4"
               />
@@ -94,22 +98,22 @@ export default function JesminAkhtarNeelaPage() {
 
               <div className="grid grid-cols-2 gap-4 mb-6">
                 <img
-                  src="/placeholder.svg?height=150&width=200"
+                  src="https://shondhibazar.com/wp-content/uploads/2025/05/Award-Winning-Moments-499x374.jpg"
                   alt="Community work 1"
                   className="rounded-lg shadow-lg"
                 />
                 <img
-                  src="/placeholder.svg?height=150&width=200"
+                  src="https://shondhibazar.com/wp-content/uploads/2025/05/talking-to-Deligates-281x374.jpg"
                   alt="Community work 2"
                   className="rounded-lg shadow-lg"
                 />
                 <img
-                  src="/placeholder.svg?height=150&width=200"
+                  src="https://shondhibazar.com/wp-content/uploads/2025/05/IMG-20250512-WA0035.jpg"
                   alt="Community work 3"
                   className="rounded-lg shadow-lg"
                 />
                 <img
-                  src="/placeholder.svg?height=150&width=200"
+                  src="https://shondhibazar.com/wp-content/uploads/2025/05/IMG-20250512-WA0030.jpg"
                   alt="Community work 4"
                   className="rounded-lg shadow-lg"
                 />
@@ -189,7 +193,7 @@ export default function JesminAkhtarNeelaPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <img
-                src="/placeholder.svg?height=300&width=400"
+                src="https://shondhibazar.com/wp-content/uploads/2025/05/talking-to-Deligates-281x374.jpg"
                 alt="Jesmin with community"
                 className="rounded-lg shadow-lg"
               />

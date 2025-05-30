@@ -87,7 +87,7 @@ export default function FAQPage() {
         <div
           className="absolute inset-0 bg-cover bg-center opacity-30"
           style={{
-            backgroundImage: "url('/placeholder.svg?height=400&width=1200')",
+            backgroundImage: "url('/images/faq-banner.jpeg')",
           }}
         />
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
