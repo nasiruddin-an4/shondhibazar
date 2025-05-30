@@ -123,13 +123,10 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-center">
             <div className="lg:col-span-1">
               <img
-                src="/placeholder.svg?height=300&width=300"
+                src="https://shondhibazar.com/wp-content/uploads/2022/09/food-safety-mode-449x374.png"
                 alt="Food Safety Model"
-                className="mx-auto h-56 w-56 sm:h-64 sm:w-64 object-cover rounded-full shadow-lg transform hover:scale-105 transition-transform duration-300"
+                className="mx-auto h-56 w-56 sm:h-64 sm:w-full object-container  transform hover:scale-105 transition-transform duration-300"
               />
-              <h3 className="text-lg sm:text-xl font-semibold text-center mt-4 text-gray-900">
-                Food Safety Model
-              </h3>
             </div>
             <div className="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               <div className="bg-emerald-500 text-white p-6 rounded-2xl shadow-lg transform hover:-translate-y-2 transition-all duration-300">

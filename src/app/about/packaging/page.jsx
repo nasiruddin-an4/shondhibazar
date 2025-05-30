@@ -9,7 +9,7 @@ export default function OurPackagingPage() {
               <div className="absolute inset-0 bg-gray-100 rounded-lg transform rotate-3"></div>
               <div className="relative bg-white p-8 rounded-lg shadow-lg">
                 <img
-                  src="/placeholder.svg?height=300&width=200"
+                  src="https://shondhibazar.com/wp-content/uploads/2022/08/shondhibazar-packages.gif"
                   alt="Eco-friendly packaging"
                   className="mx-auto"
                 />
@@ -79,37 +79,37 @@ export default function OurPackagingPage() {
                 age.
               </p>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               <img
-                src="/placeholder.svg?height=150&width=200"
+                src="https://shondhibazar.com/wp-content/uploads/2022/08/bolltes-opt.png"
                 alt="Glass jar 1"
                 className="rounded-lg shadow-lg"
               />
-              <img
-                src="/placeholder.svg?height=150&width=200"
+              {/* <img
+                src="https://shondhibazar.com/wp-content/uploads/2022/08/bolltes-opt.png"
                 alt="Glass jar 2"
                 className="rounded-lg shadow-lg"
               />
               <img
-                src="/placeholder.svg?height=150&width=200"
+                src="https://shondhibazar.com/wp-content/uploads/2022/08/bolltes-opt.png"
                 alt="Glass jar 3"
                 className="rounded-lg shadow-lg"
               />
               <img
-                src="/placeholder.svg?height=150&width=200"
+                src="https://shondhibazar.com/wp-content/uploads/2022/08/bolltes-opt.png"
                 alt="Glass jar 4"
                 className="rounded-lg shadow-lg"
               />
               <img
-                src="/placeholder.svg?height=150&width=200"
+                src="https://shondhibazar.com/wp-content/uploads/2022/08/bolltes-opt.png"
                 alt="Glass jar 5"
                 className="rounded-lg shadow-lg"
               />
               <img
-                src="/placeholder.svg?height=150&width=200"
+                src="https://shondhibazar.com/wp-content/uploads/2022/08/bolltes-opt.png"
                 alt="Glass jar 6"
                 className="rounded-lg shadow-lg"
-              />
+              /> */}
             </div>
           </div>
         </div>
@@ -125,7 +125,7 @@ export default function OurPackagingPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
             <div>
               <img
-                src="/placeholder.svg?height=400&width=500"
+                src="https://shondhibazar.com/wp-content/uploads/2022/08/bottle-pack-opt.jpg"
                 alt="Glass jars collection"
                 className="rounded-lg shadow-lg"
               />
@@ -181,18 +181,18 @@ export default function OurPackagingPage() {
                 the glass and a lot of energy than normal.
               </p>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               <img
-                src="/placeholder.svg?height=150&width=200"
+                src="https://shondhibazar.com/wp-content/uploads/2022/08/recycle-bottle-of-shondhibazar-opt.jpg"
                 alt="Recycling 1"
                 className="rounded-lg shadow-lg"
               />
-              <img
+              {/* <img
                 src="/placeholder.svg?height=150&width=200"
                 alt="Recycling 2"
                 className="rounded-lg shadow-lg"
-              />
-              <img
+              /> */}
+              {/* <img
                 src="/placeholder.svg?height=150&width=200"
                 alt="Recycling 3"
                 className="rounded-lg shadow-lg"
@@ -201,7 +201,7 @@ export default function OurPackagingPage() {
                 src="/placeholder.svg?height=150&width=200"
                 alt="Recycling 4"
                 className="rounded-lg shadow-lg"
-              />
+              /> */}
             </div>
           </div>
         </div>

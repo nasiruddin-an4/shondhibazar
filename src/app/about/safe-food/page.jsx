@@ -1,3 +1,5 @@
+import { Quote } from "lucide-react";
+
 export default function SafeFoodPage() {
   return (
     <div className="min-h-screen">
@@ -7,7 +9,7 @@ export default function SafeFoodPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <img
-                src="/placeholder.svg?height=400&width=500"
+                src="https://shondhibazar.com/wp-content/uploads/2022/08/image-of-shondhi-singing.jpg"
                 alt="Farmers in field"
                 className="rounded-lg shadow-lg"
               />
@@ -69,7 +71,7 @@ export default function SafeFoodPage() {
               />
             </div>
             <div className="bg-green-50 p-8 rounded-lg">
-              <div className="text-6xl mb-4">💬</div>
+              <Quote className=" text-green-400 font-bold text-7xl" />
               <p className="text-xl text-gray-700 leading-relaxed">
                 We at Shondhi use conventional and natural methods to process
                 and preserve our products. Our products are absolutely harmful
@@ -95,7 +97,7 @@ export default function SafeFoodPage() {
             </div>
             <div>
               <img
-                src="/placeholder.svg?height=300&width=500"
+                src="https://shondhibazar.com/wp-content/uploads/2022/08/preservation.jpg"
                 alt="Fresh spices in jars"
                 className="rounded-lg shadow-lg"
               />
@@ -106,7 +108,7 @@ export default function SafeFoodPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
             <div>
               <img
-                src="/placeholder.svg?height=300&width=400"
+                src="https://shondhibazar.com/wp-content/uploads/2022/08/preservation1-570x380.jpg"
                 alt="Safe food every day"
                 className="rounded-lg shadow-lg"
               />
@@ -142,7 +144,7 @@ export default function SafeFoodPage() {
             </div>
             <div>
               <img
-                src="/placeholder.svg?height=300&width=500"
+                src="https://shondhibazar.com/wp-content/uploads/2022/08/rice-opt-.jpg"
                 alt="Natural ingredients"
                 className="rounded-lg shadow-lg"
               />

@@ -3,64 +3,76 @@ import Link from "next/link";
 export default function OurArtisanPage() {
   const farmers = [
     {
-      name: "মো: আব্দুল হালিম",
-      location: "নরসিংদী",
-      image: "/placeholder.svg?height=200&width=200",
+      name: "মোছাঃ-হাজেরা-খাতুন",
+      location: "মানিকগঞ্জ",
+      image:
+        "https://shondhibazar.com/wp-content/uploads/2022/09/%E0%A6%AE%E0%A7%8B%E0%A6%9B%E0%A6%BE%E0%A6%83-%E0%A6%B9%E0%A6%BE%E0%A6%9C%E0%A7%87%E0%A6%B0%E0%A6%BE-%E0%A6%96%E0%A6%BE%E0%A6%A4%E0%A7%81%E0%A6%A8.png",
     },
     {
-      name: "মোছা: রাবেয়া খাতুন",
-      location: "নরসিংদী",
-      image: "/placeholder.svg?height=200&width=200",
+      name: "মোছাঃ-আসমা-বেগম",
+      location: "সন্ধি কৃষক (মানিকগঞ্জ)",
+      image:
+        "https://shondhibazar.com/wp-content/uploads/2022/07/%E0%A6%AE%E0%A7%8B%E0%A6%9B%E0%A6%BE%E0%A6%83-%E0%A6%86%E0%A6%B8%E0%A6%AE%E0%A6%BE-%E0%A6%AC%E0%A7%87%E0%A6%97%E0%A6%AE.jpg",
     },
     {
-      name: "মো: আব্দুল মান্নান",
-      location: "নরসিংদী",
-      image: "/placeholder.svg?height=200&width=200",
+      name: "মোঃহালিমা খাতুন",
+      location: "সন্ধি কৃষক (মানিকগঞ্জ)",
+      image:
+        "https://shondhibazar.com/wp-content/uploads/2022/07/%E0%A6%AE%E0%A7%8B%E0%A6%83-%E0%A6%B9%E0%A6%BE%E0%A6%B2%E0%A6%BF%E0%A6%AE%E0%A6%BE-%E0%A6%96%E0%A6%BE%E0%A6%A4%E0%A7%81%E0%A6%A8.jpg",
     },
     {
-      name: "মো: আব্দুল হালিম",
-      location: "নরসিংদী",
-      image: "/placeholder.svg?height=200&width=200",
+      name: "মোঃসাইদ আলম খোকন",
+      location: "সন্ধি কৃষক (সরিষাবাড়ী)",
+      image:
+        "https://shondhibazar.com/wp-content/uploads/2022/07/%E0%A6%AE%E0%A7%8B%E0%A6%83-%E0%A6%B8%E0%A6%BE%E0%A6%87%E0%A6%A6-%E0%A6%86%E0%A6%B2%E0%A6%AE-%E0%A6%96%E0%A7%8B%E0%A6%95%E0%A6%A8.jpg",
     },
     {
-      name: "মো: আব্দুল হালিম",
-      location: "নরসিংদী",
-      image: "/placeholder.svg?height=200&width=200",
+      name: "মোঃরুবেল ও মোছাঃ সালমা বেগম",
+      location: "সন্ধি কৃষক (রাজশাহী)",
+      image:
+        "https://shondhibazar.com/wp-content/uploads/2022/07/%E0%A6%AE%E0%A7%8B%E0%A6%83-%E0%A6%B0%E0%A7%81%E0%A6%AC%E0%A7%87%E0%A6%B2-%E0%A6%93-%E0%A6%AE%E0%A7%8B%E0%A6%9B%E0%A6%BE%E0%A6%83-%E0%A6%B8%E0%A6%BE%E0%A6%B2%E0%A6%AE%E0%A6%BE-%E0%A6%AC%E0%A7%87%E0%A6%97%E0%A6%AE.jpg",
     },
     {
-      name: "মোছা: রাবেয়া খাতুন",
-      location: "নরসিংদী",
-      image: "/placeholder.svg?height=200&width=200",
+      name: "মোঃরিমন মন্ডল",
+      location: "সন্ধি কৃষক (সরিষাবাড়ী)",
+      image:
+        "https://shondhibazar.com/wp-content/uploads/2022/07/%E0%A6%AE%E0%A7%8B%E0%A6%83-%E0%A6%B0%E0%A6%BF%E0%A6%AE%E0%A6%A8-%E0%A6%AE%E0%A6%A8%E0%A7%8D%E0%A6%A1%E0%A6%B2.jpg",
     },
     {
-      name: "মো: আব্দুল মান্নান",
-      location: "নরসিংদী",
-      image: "/placeholder.svg?height=200&width=200",
+      name: "মোঃমুনসের আলি",
+      location: "সন্ধি কৃষক (নরসিংদী)",
+      image:
+        "https://shondhibazar.com/wp-content/uploads/2022/07/%E0%A6%AE%E0%A7%8B%E0%A6%83-%E0%A6%AE%E0%A7%81%E0%A6%A8%E0%A6%B8%E0%A7%87%E0%A6%B0-%E0%A6%86%E0%A6%B2%E0%A6%BF.jpg",
     },
     {
-      name: "মো: আব্দুল হালিম",
-      location: "নরসিংদী",
-      image: "/placeholder.svg?height=200&width=200",
+      name: "মোঃনাসির হোসেন",
+      location: "সন্ধি কৃষক (মানিকগঞ্জ)",
+      image:
+        "https://shondhibazar.com/wp-content/uploads/2022/07/%E0%A6%AE%E0%A7%8B%E0%A6%83-%E0%A6%A8%E0%A6%BE%E0%A6%B8%E0%A6%BF%E0%A6%B0-%E0%A6%B9%E0%A7%8B%E0%A6%B8%E0%A7%87%E0%A6%A8.jpg",
     },
     {
-      name: "মো: আব্দুল হালিম",
-      location: "নরসিংদী",
-      image: "/placeholder.svg?height=200&width=200",
+      name: "মোঃদুলাল উদ্দিন ও মোছাঃ রাবেয়া খানম",
+      location: "সন্ধি কৃষক (মানিকগঞ্জ)",
+      image:
+        "https://shondhibazar.com/wp-content/uploads/2022/07/%E0%A6%AE%E0%A7%8B%E0%A6%83-%E0%A6%A6%E0%A7%81%E0%A6%B2%E0%A6%BE%E0%A6%B2-%E0%A6%89%E0%A6%A6%E0%A7%8D%E0%A6%A6%E0%A6%BF%E0%A6%A8-%E0%A6%93-%E0%A6%AE%E0%A7%8B%E0%A6%9B%E0%A6%BE%E0%A6%83-%E0%A6%B0%E0%A6%BE%E0%A6%AC%E0%A7%87%E0%A6%AF%E0%A6%BC%E0%A6%BE-%E0%A6%96%E0%A6%BE%E0%A6%A8%E0%A6%AE.jpg",
     },
     {
-      name: "মোছা: রাবেয়া খাতুন",
-      location: "নরসিংদী",
-      image: "/placeholder.svg?height=200&width=200",
+      name: "মোঃআব্দুল সাত্তার",
+      location: "সন্ধি কৃষক (রাজশাহী)",
+      image:
+        "https://shondhibazar.com/wp-content/uploads/2022/07/%E0%A6%AE%E0%A7%8B%E0%A6%83-%E0%A6%86%E0%A6%AC%E0%A7%8D%E0%A6%A6%E0%A7%81%E0%A6%B2-%E0%A6%B8%E0%A6%BE%E0%A6%A4%E0%A7%8D%E0%A6%A4%E0%A6%BE%E0%A6%B0.jpg",
     },
     {
-      name: "মো: আব্দুল মান্নান",
-      location: "নরসিংদী",
-      image: "/placeholder.svg?height=200&width=200",
+      name: "মোঃআলিম মুনসি",
+      location: "সন্ধি কৃষক (রাজশাহী)",
+      image:
+        "https://shondhibazar.com/wp-content/uploads/2022/07/%E0%A6%AE%E0%A7%8B%E0%A6%83-%E0%A6%86%E0%A6%B2%E0%A6%BF%E0%A6%AE-%E0%A6%AE%E0%A7%81%E0%A6%A8%E0%A6%B8%E0%A6%BF.jpg",
     },
     {
-      name: "মো: আব্দুল হালিম",
-      location: "নরসিংদী",
-      image: "/placeholder.svg?height=200&width=200",
+      name: "মোঃজয়নাল",
+      location: "সন্ধি কৃষক (নরসিংদী)",
+      image:
+        "https://shondhibazar.com/wp-content/uploads/2022/07/%E0%A6%AE%E0%A7%8B%E0%A6%83-%E0%A6%9C%E0%A6%AF%E0%A6%BC%E0%A6%A8%E0%A6%BE%E0%A6%B2.jpg",
     },
   ];
 
@@ -71,7 +83,8 @@ export default function OurArtisanPage() {
         <div
           className="absolute inset-0 bg-cover bg-center opacity-30"
           style={{
-            backgroundImage: "url('/placeholder.svg?height=400&width=1200')",
+            backgroundImage:
+              "url('https://shondhibazar.com/wp-content/uploads/2022/08/bolltes-opt.png')",
           }}
         />
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -112,16 +125,16 @@ export default function OurArtisanPage() {
       </section>
 
       {/* Quality Assurance */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               <img
-                src="/placeholder.svg?height=200&width=200"
+                src="https://shondhibazar.com/wp-content/uploads/2022/08/our-artisan-shondhibazar-farmers.jpg"
                 alt="Farmer 1"
                 className="rounded-lg shadow-lg"
               />
-              <img
+              {/* <img
                 src="/placeholder.svg?height=200&width=200"
                 alt="Farmer 2"
                 className="rounded-lg shadow-lg"
@@ -135,7 +148,7 @@ export default function OurArtisanPage() {
                 src="/placeholder.svg?height=200&width=200"
                 alt="Farmer 4"
                 className="rounded-lg shadow-lg"
-              />
+              /> */}
             </div>
             <div>
               <h2 className="text-4xl font-bold text-gray-800 mb-6">
@@ -204,9 +217,9 @@ export default function OurArtisanPage() {
             </div>
             <div>
               <img
-                src="/placeholder.svg?height=400&width=500"
+                src="https://shondhibazar.com/wp-content/uploads/2022/08/farmer11.jpg"
                 alt="Farmers working together"
-                className="rounded-lg shadow-lg"
+                className=""
               />
             </div>
           </div>
