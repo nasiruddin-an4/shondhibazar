@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const aboutStoreItems = [
   { title: "About Shondibazar", link: "/about/" },
-  { title: "From Your Groewer ", link: "/about/safe-food" },
+  { title: "From Your Groewer ", link: "/about/home-of-safe-food" },
   { title: "Our Packging ", link: "/about/packaging" },
   { title: "Our Artisan ", link: "/about/artisan" },
   { title: "Our Safe Food ", link: "/about/safe-food" },
