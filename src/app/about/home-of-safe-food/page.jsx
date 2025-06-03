@@ -95,6 +95,25 @@ export default function FreshHarvestRedesign() {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Breadcrumb */}
+      <nav className="bg-gray-100 py-3 px-4">
+        <ol className="flex items-center space-x-2 text-sm text-gray-600">
+          <li>
+            <a href="/" className="hover:underline text-green-700">
+              Home
+            </a>
+          </li>
+          <li>/</li>
+          <li>
+            <a href="/about" className="hover:underline text-green-700">
+              About
+            </a>
+          </li>
+          <li>/</li>
+          <li className="text-gray-900 font-semibold">Home of Safe Food</li>
+        </ol>
+      </nav>
+
       {/* Navigation */}
 
       {/* Hero Section */}
@@ -102,7 +121,7 @@ export default function FreshHarvestRedesign() {
         id="home"
         className="relative min-h-screen flex items-center justify-center overflow-hidden"
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-green-50 via-blue-50 to-teal-50"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-[#C9D158] via-[#a1a83d] to-[#dce73c]"></div>
 
         {/* Floating elements */}
         <div className="absolute inset-0 overflow-hidden">

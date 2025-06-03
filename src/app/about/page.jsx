@@ -23,8 +23,20 @@ export default function AboutPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white font-sans">
+      {/* Breadcrumb */}
+      <nav className="bg-gray-100 py-3 px-4">
+        <ol className="flex items-center space-x-2 text-sm text-gray-600">
+          <li>
+            <a href="/" className="hover:underline text-green-700">
+              Home
+            </a>
+          </li>
+          <li>/</li>
+          <li className="text-gray-900 font-semibold">About</li>
+        </ol>
+      </nav>
       {/* Hero Section */}
-      <section className="relative py-20 sm:py-32 bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-100 overflow-hidden">
+      <section className="relative py-20 sm:py-32 bg-gradient-to-br  from-[#C9D158] via-[#a9b13f] to-emerald-100 overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute top-0 left-0 w-72 h-72 bg-emerald-300/20 rounded-full blur-3xl animate-pulse"></div>
           <div className="absolute bottom-0 right-0 w-96 h-96 bg-teal-300/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
@@ -258,6 +270,34 @@ export default function AboutPage() {
               </Link>
             </motion.div>
           </div>
+        </div>
+      </section>
+
+      {/* Our Artisan */}
+      <section className="py-20 bg-emerald-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.8 }}
+            className="mb-10"
+          >
+            <h2 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
+              Our Artisan, Our Strength
+            </h2>
+            <p className="text-lg sm:text-xl text-gray-700 max-w-3xl mx-auto leading-relaxed">
+              Meet the dedicated farmers and artisans who make our mission
+              possible. Their commitment to quality and sustainable farming
+              practices ensures that we can deliver the best products to your
+              table.
+            </p>
+          </motion.div>
+          <Link
+            href="/about/artisan"
+            className="inline-block bg-pink-600 hover:bg-pink-700 text-white px-8 py-4 rounded-lg text-lg font-semibold transition-colors"
+          >
+            Meet Our Artisan
+          </Link>
         </div>
       </section>
 

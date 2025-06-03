@@ -108,7 +108,7 @@ const TopNavbar = () => {
             </Link>
             <div className="h-4 w-px bg-gray-300" />
             <Link
-              href="/faqs"
+              href="/about/faq"
               className="hover:text-green-600 transition-colors"
             >
               FAQs

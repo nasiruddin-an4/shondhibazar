@@ -3,6 +3,25 @@ import { Quote } from "lucide-react";
 export default function SafeFoodPage() {
   return (
     <div className="min-h-screen">
+      {/* Breadcrumb */}
+      <nav className="bg-gray-100 py-3 px-4">
+        <ol className="flex items-center space-x-2 text-sm text-gray-600">
+          <li>
+            <a href="/" className="hover:underline text-green-700">
+              Home
+            </a>
+          </li>
+          <li>/</li>
+          <li>
+            <a href="/about" className="hover:underline text-green-700">
+              About
+            </a>
+          </li>
+          <li>/</li>
+          <li className="text-gray-900 font-semibold">Safe Food</li>
+        </ol>
+      </nav>
+
       {/* Hero Section */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

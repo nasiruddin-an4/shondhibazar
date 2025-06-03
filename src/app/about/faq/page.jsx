@@ -82,6 +82,25 @@ export default function FAQPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Breadcrumb */}
+      <nav className="bg-gray-100 py-3 px-4">
+        <ol className="flex items-center space-x-2 text-sm text-gray-600">
+          <li>
+            <a href="/" className="hover:underline text-green-700">
+              Home
+            </a>
+          </li>
+          <li>/</li>
+          <li>
+            <a href="/about" className="hover:underline text-green-700">
+              About
+            </a>
+          </li>
+          <li>/</li>
+          <li className="text-gray-900 font-semibold">FAQ</li>
+        </ol>
+      </nav>
+
       {/* Hero Section */}
       <section className="py-20 bg-gradient-to-r from-gray-800 to-gray-600 text-white relative">
         <div
