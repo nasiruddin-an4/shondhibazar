@@ -14,6 +14,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
+import TrustSections from "@/components/Home/TrustSections/TrustSections";
 
 export default function FreshHarvestRedesign() {
   const [scrollY, setScrollY] = useState(0);
@@ -422,9 +423,9 @@ export default function FreshHarvestRedesign() {
           </div>
         </div>
       </section>
-
+      <TrustSections />
       {/* Certifications */}
-      <section className="py-20 px-4">
+      {/* <section className="py-20 px-4">
         <div className="max-w-7xl mx-auto text-center">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-16">
             Certifications & Trust
@@ -480,10 +481,10 @@ export default function FreshHarvestRedesign() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* CTA Section */}
-      <section className="py-20 px-4 bg-gradient-to-r from-green-600 to-blue-600 text-white">
+      {/* <section className="py-20 px-4 bg-gradient-to-r from-green-600 to-blue-600 text-white">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-4xl md:text-6xl font-bold mb-6">
             Join Our Community
@@ -496,7 +497,7 @@ export default function FreshHarvestRedesign() {
             Start Shopping Today
           </button>
         </div>
-      </section>
+      </section> */}
     </div>
   );
 }
