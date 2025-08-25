@@ -4,6 +4,22 @@ import React from "react";
 import { Check, Package } from "lucide-react";
 
 const OrderSuccess = ({ onContinueShopping }) => {
+  // create a mock order and persist to localStorage
+  React.useEffect(() => {
+    try {
+      const id = "ORD-" + Math.random().toString(36).substr(2, 9).toUpperCase();
+      const order = {
+        id,
+        date: new Date().toISOString(),
+        total: (Math.random() * 2000 + 100).toFixed(2),
+        status: "Processing",
+      };
+      const raw = localStorage.getItem("sb_orders");
+      const list = raw ? JSON.parse(raw) : [];
+      list.unshift(order);
+      localStorage.setItem("sb_orders", JSON.stringify(list));
+    } catch (err) {}
+  }, []);
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white py-12">
       <div className="max-w-3xl mx-auto px-4">

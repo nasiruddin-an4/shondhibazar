@@ -5,7 +5,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { ShoppingCart, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { handleQuestion } from "@/redux/API_Slices/AuthSlice";
+import AuthModal from "@/components/Auth/AuthModal";
+import ShortUserMenu from "@/components/Auth/ShortUserMenu";
 import { NumberCounter } from "@/lib/NumberCounter";
 
 const menuItems = [
@@ -62,6 +65,9 @@ const MainNavbar = ({ onOpenCart }) => {
 
   const cart = useSelector((state) => state.products.cart);
   const products = useSelector((state) => state.products.products);
+  const dispatch = useDispatch();
+  const isSignedIn = useSelector((state) => state.auth?.signin);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   // Calculate cart total
   const cartTotal = cart.reduce((total, item) => {
@@ -197,7 +203,27 @@ const MainNavbar = ({ onOpenCart }) => {
             <ShoppingCart size={20} className="text-green-600" />
             <span className="font-medium">2,250.00৳</span>
           </div> */}
-          <CartButton cartTotal={cartTotal} onOpenCart={onOpenCart} />
+          <div className="flex items-center space-x-4">
+            {/* Auth / Login Button */}
+            {!isSignedIn ? (
+              <button
+                onClick={() => setShowAuthModal(true)}
+                className="py-2 px-3 rounded bg-green-600 text-white font-medium hover:bg-green-700 transition"
+              >
+                Login
+              </button>
+            ) : (
+              <ShortUserMenu />
+            )}
+
+            <CartButton cartTotal={cartTotal} onOpenCart={onOpenCart} />
+          </div>
+
+          {/* Auth Modal */}
+          <AuthModal
+            open={showAuthModal}
+            onClose={() => setShowAuthModal(false)}
+          />
         </div>
       </div>
     </motion.nav>

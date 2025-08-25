@@ -15,12 +15,12 @@ import { combineReducers } from "@reduxjs/toolkit";
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["userSlice", "commonSlice", "products"], // Add reducers you want to persist
+  whitelist: ["auth", "commonSlice", "products"], // Add reducers you want to persist
 };
 
 // Combine all reducers
 const rootReducer = combineReducers({
-  userSlice: AuthSlice,
+  auth: AuthSlice,
   commonSlice: commonSlice,
   userSlice: userSlice,
   products: productReducer,
