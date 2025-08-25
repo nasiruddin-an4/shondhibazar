@@ -37,21 +37,31 @@ export default function OrdersPage() {
                 <div>
                   <div className="text-sm text-gray-500">Order</div>
                   <div className="font-medium text-lg">{o.id}</div>
-                  <div className="text-xs text-gray-400 mt-1">{new Date(o.date).toLocaleString()}</div>
+                  <div className="text-xs text-gray-400 mt-1">
+                    {new Date(o.date).toLocaleString()}
+                  </div>
                 </div>
 
                 <div className="text-right">
                   <div className="font-semibold">৳{o.total}</div>
                   <div className="mt-2">
-                    <span className={`inline-block text-xs px-2 py-1 rounded-full ${
-                      o.status === "Delivered" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
-                    }`}>{o.status}</span>
+                    <span
+                      className={`inline-block text-xs px-2 py-1 rounded-full ${
+                        o.status === "Delivered"
+                          ? "bg-green-100 text-green-700"
+                          : "bg-yellow-100 text-yellow-700"
+                      }`}
+                    >
+                      {o.status}
+                    </span>
                   </div>
                 </div>
               </div>
 
               <div className="mt-4 flex items-center justify-between">
-                <div className="text-sm text-gray-600">Estimated delivery: 2-4 days</div>
+                <div className="text-sm text-gray-600">
+                  Estimated delivery: 2-4 days
+                </div>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={() => (window.location.href = `/orders/${o.id}`)}
@@ -59,7 +69,12 @@ export default function OrdersPage() {
                   >
                     Track
                   </button>
-                  <a href={`/invoice/${o.id}`} className="text-sm text-gray-500 hover:underline">Invoice</a>
+                  <a
+                    href={`/invoice/${o.id}`}
+                    className="text-sm text-gray-500 hover:underline"
+                  >
+                    Invoice
+                  </a>
                 </div>
               </div>
             </div>

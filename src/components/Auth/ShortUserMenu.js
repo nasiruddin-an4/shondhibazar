@@ -32,7 +32,12 @@ export default function ShortUserMenu() {
     dispatch(handleQuestion(false));
   };
 
-  const initials = (user?.name || "U").split(" ").map((s) => s[0]).slice(0, 2).join("").toUpperCase();
+  const initials = (user?.name || "U")
+    .split(" ")
+    .map((s) => s[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
 
   return (
     <div className="relative" ref={ref}>
@@ -43,7 +48,11 @@ export default function ShortUserMenu() {
       >
         {user?.avatar ? (
           // show avatar image if provided
-          <img src={user.avatar} alt="avatar" className="w-10 h-10 rounded-full object-cover" />
+          <img
+            src={user.avatar}
+            alt="avatar"
+            className="w-10 h-10 rounded-full object-cover"
+          />
         ) : (
           <span>{initials}</span>
         )}
@@ -62,9 +71,24 @@ export default function ShortUserMenu() {
           </div>
 
           <div className="border-t pt-2">
-            <Link href="/profile" className="block px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded">My profile</Link>
-            <Link href="/orders" className="block px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded">Orders</Link>
-            <button onClick={logout} className="w-full text-left mt-2 px-2 py-2 text-sm text-red-600">Logout</button>
+            <Link
+              href="/profile"
+              className="block px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded"
+            >
+              My profile
+            </Link>
+            <Link
+              href="/orders"
+              className="block px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded"
+            >
+              Orders
+            </Link>
+            <button
+              onClick={logout}
+              className="w-full text-left mt-2 px-2 py-2 text-sm text-red-600"
+            >
+              Logout
+            </button>
           </div>
         </div>
       )}
