@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Loader from "@/components/Checkout/Loader";
 
 export default function OrderDetails({ params }) {
   const { id } = params || {};
@@ -9,14 +10,24 @@ export default function OrderDetails({ params }) {
 
   useEffect(() => {
     try {
-      const raw = localStorage.getItem("sb_orders");
-      const list = raw ? JSON.parse(raw) : [];
-      const o = list.find((x) => x.id === id);
-      setOrder(o || null);
+      setOrder(null);
+      setTimeout(() => {
+        const raw = localStorage.getItem("sb_orders");
+        const list = raw ? JSON.parse(raw) : [];
+        const o = list.find((x) => x.id === id);
+        setOrder(o || null);
+      }, 400);
     } catch (err) {
       setOrder(null);
     }
   }, [id]);
+
+  if (order === null)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader className="w-12 h-12 text-green-600" />
+      </div>
+    );
 
   if (!order)
     return (

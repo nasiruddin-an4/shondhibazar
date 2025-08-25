@@ -1,17 +1,30 @@
 "use client";
 import { useEffect, useState } from "react";
+import Loader from "@/components/Checkout/Loader";
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     try {
+      setLoading(true);
       const raw = localStorage.getItem("sb_orders");
-      setOrders(raw ? JSON.parse(raw) : []);
+      setTimeout(() => {
+        setOrders(raw ? JSON.parse(raw) : []);
+        setLoading(false);
+      }, 450);
     } catch (err) {
       setOrders([]);
     }
   }, []);
+
+  if (loading)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader className="w-12 h-12 text-green-600" />
+      </div>
+    );
 
   if (!orders.length)
     return (

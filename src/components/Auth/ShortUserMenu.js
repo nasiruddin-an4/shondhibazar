@@ -17,6 +17,27 @@ export default function ShortUserMenu() {
     } catch (err) {}
   }, []);
 
+  // Listen for updates to the user (from profile page) or storage changes from other tabs
+  useEffect(() => {
+    const onUpdate = () => {
+      try {
+        const raw = localStorage.getItem("sb_user");
+        setUser(raw ? JSON.parse(raw) : null);
+      } catch (err) {}
+    };
+
+    const onStorage = (e) => {
+      if (e.key === "sb_user") onUpdate();
+    };
+
+    window.addEventListener("sb_user_updated", onUpdate);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      window.removeEventListener("sb_user_updated", onUpdate);
+      window.removeEventListener("storage", onStorage);
+    };
+  }, []);
+
   useEffect(() => {
     const onDoc = (e) => {
       if (ref.current && !ref.current.contains(e.target)) setOpen(false);

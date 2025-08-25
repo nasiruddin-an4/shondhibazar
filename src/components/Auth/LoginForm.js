@@ -60,7 +60,7 @@ export default function LoginForm({ onSuccess }) {
         >
           {loading ? "Signing in..." : "Sign in"}
         </button>
-        <a href="/app/forgot" className="text-sm text-gray-500 hover:underline">
+        <a href="/forgot" className="text-sm text-gray-500 hover:underline">
           Forgot?
         </a>
       </div>
