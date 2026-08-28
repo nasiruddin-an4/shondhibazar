@@ -1,0 +1,72 @@
+OLD PATH -> NEW PATH
+============================================================
+adaa-300x225 (1).jpg  ->  (deleted - exact duplicate)
+ghee-03-300x225 (1).webp  ->  (deleted - exact duplicate)
+Ghee-300x225 (1).webp  ->  (deleted - exact duplicate)
+Ghee-300x225 (2).webp  ->  (deleted - exact duplicate)
+ghee04-300x225 (1).webp  ->  (deleted - exact duplicate)
+ghee04-300x225 (2).webp  ->  (deleted - exact duplicate)
+nirapod-murgi-300x225 (1).gif  ->  (deleted - exact duplicate)
+shorsher-tel-small-01-1-300x225 (1).webp  ->  (deleted - exact duplicate)
+20-Mashkalai_Dal_Flour_Powder-e1644826625442-300x225.jpg  ->  products/dal-lentils/mashkalai-dal-flour-powder.jpg
+20210610_172648-1-300x225.jpg  ->  products/meat-poultry/raw-poultry-whole.jpg
+ada.jpeg  ->  products/vegetables/ginger.jpeg
+adaa-300x225.jpg  ->  products/vegetables/ginger-fresh.jpg
+amond-nut-300x225.webp  ->  products/nuts-seeds/almond-nuts.webp
+beef-300x225.jpg  ->  products/meat-poultry/beef.jpg
+beshon-02-385x385-1-300x225.webp  ->  products/flour-atta/besan-gram-flour.webp
+Buter-daal-1-1-300x225.jpg  ->  products/dal-lentils/buter-dal-chickpea-lentil.jpg
+cashew-nut-web-300x225.gif  ->  products/nuts-seeds/cashew-nut.gif
+chaker-modhu-1-300x225.jpg  ->  products/honey/chaker-modhu-raw-honey.jpg
+chaler-aata-with-package-300x225.webp  ->  products/flour-atta/rice-flour-package.webp
+chaler-aataa-premium-385x385-1-300x225.webp  ->  products/flour-atta/rice-flour-premium.webp
+chia-seed-300x225.jpg  ->  products/nuts-seeds/chia-seed.jpg
+china-baadam-300x225.png  ->  products/nuts-seeds/peanut-china-badam.png
+chini-1-300x225.webp  ->  products/sugar-salt/sugar-chini-1.webp
+chini-white-1-300x225.webp  ->  products/sugar-salt/white-sugar.webp
+close-up-mango-fruit-mango-tree-300x225.jpg  ->  products/fruits/mango-on-tree-closeup.jpg
+dekicata-cal-1-300x225.jpg  ->  products/spices/roasted-spice-powder.jpg
+DSC1946.jpg  ->  products/spices/premium-masala-gift-box-set.jpg
+ghee-03-300x225.webp  ->  products/ghee/pure-ghee-3.webp
+Ghee-300x225.webp  ->  products/ghee/pure-ghee-1.webp
+ghee-vaja-shemai-300x225.jpg  ->  products/sweets-snacks/ghee-fried-shemai-vermicelli.jpg
+ghee04-300x225.webp  ->  products/ghee/pure-ghee-4.webp
+GLI-r7x3i03yhpy2ei4nsnsm15ibb2a56dle22beiw3thc.jpg  ->  products/uncategorized/brand-event-award-photo.jpg
+Home-Made-Curd-Yogurt_-1.jpg-1-300x225.jpg  ->  products/dairy-eggs/homemade-curd-yogurt.jpg
+HOney-300x225.gif  ->  products/honey/raw-honey.gif
+image_123927839-300x225.jpg  ->  products/condiments/apple-cider-vinegar.jpg
+image_50425345-1-300x225.jpg  ->  products/fruits/green-mango-basket.jpg
+isubgul-Glass-300x225.jpg  ->  products/nuts-seeds/isabgul-psyllium-husk.jpg
+kaju-badam-300x225.gif  ->  products/nuts-seeds/cashew-badam.gif
+kalijirar-tel-300x225.png  ->  products/oil/black-seed-kalojira-oil.png
+Kataribhog-03-300x225.gif  ->  products/rice/kataribhog-rice.gif
+kholisha-fuler-modhu-1-300x225.jpg  ->  products/honey/kholisha-flower-honey.jpg
+laal-aarta-300x225.gif  ->  products/flour-atta/red-wheat-flour-laal-atta.gif
+Mango-himshagor-shondhibazar-300x225.jpg  ->  products/fruits/himsagor-mango.jpg
+morich-04-300x225.webp  ->  products/spices/chili-morich.webp
+moyda.png  ->  products/flour-atta/maida-all-purpose-flour.png
+mugdal-385x491-1-300x225.jpg  ->  products/dal-lentils/mug-dal-moong-lentil.jpg
+mushur-daal-385x314-1-300x225.gif  ->  products/dal-lentils/mushur-dal-red-lentil.gif
+nirapod-dim-300x225.gif  ->  products/dairy-eggs/safe-eggs-nirapod-dim.gif
+nirapod-murgi-300x225.gif  ->  products/meat-poultry/safe-chicken-nirapod-murgi.gif
+onion-paste-shondhibazar-300x225.jpg  ->  products/vegetables/onion-paste.jpg
+peaj-300x225.jpg  ->  products/vegetables/onion-peaj.jpg
+pexels-pixabay-248412-scaled-e1661070889284-300x225.jpg  ->  products/dairy-eggs/fresh-milk.jpg
+pink-salt-web-300x225.png  ->  products/sugar-salt/pink-himalayan-salt.png
+potato.jpeg  ->  products/vegetables/potato.jpeg
+roshun-Shondhibazare-300x225.jpg  ->  products/vegetables/garlic-roshun.jpg
+rost-chiken.jpg  ->  products/meat-poultry/chicken-leg-quarter.jpg
+rosted-kaaju-01-300x225.webp  ->  products/nuts-seeds/roasted-cashew.webp
+sada-aata-1-300x225.jpg  ->  products/flour-atta/white-wheat-flour-sada-atta.jpg
+shondhibazar-jhola-gurr-300x225.jpg  ->  products/gur-jaggery/jhola-gur-liquid-molasses.jpg
+shondhibazar-khejurer-gur-300x225.jpg  ->  products/gur-jaggery/khejurer-gur-date-palm-jaggery.jpg
+shondhibazar-sorishar-tel-300x225.jpg  ->  products/oil/mustard-oil-sorishar-tel.jpg
+shorsher-tel-small-01-1-300x225.webp  ->  products/oil/mustard-oil-small-1.webp
+shorsher-tel-small-03-1-300x225.webp  ->  products/oil/mustard-oil-small-2.webp
+shukhno-morich-e1645190510955-300x225.jpg  ->  products/spices/dried-chili-shukhno-morich.jpg
+tiler-tel-02-300x225.webp  ->  products/oil/sesame-oil-tiler-tel.webp
+tokma-300x225.gif  ->  products/nuts-seeds/tokma-basil-seed.gif
+web-image-300x225.jpg  ->  products/meat-poultry/chicken-wings.jpg
+WhatsApp-Image-2021-06-08-at-12.24.41-PM-300x225.jpeg  ->  products/meat-poultry/chicken-drumsticks.jpeg
+WhatsApp-Image-2021-06-08-at-12.28.34-PM-300x225.jpeg  ->  products/meat-poultry/chicken-breast.jpeg
+zinc-rice-2-1-300x225.webp  ->  products/rice/zinc-enriched-rice.webp

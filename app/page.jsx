@@ -1,0 +1,24 @@
+import CommunityFarmers from "@/components/CommunityFarmers/CommunityFarmers";
+import CategorySection from "@/components/Home/CategorySection/CategorySection";
+import HeroContainer from "@/components/Home/Hero/HeroContainer";
+import OurImpact from "@/components/Home/OurImpact/OurImpact";
+import PopularProducts from "@/components/Home/PopularProducts/PopularProducts";
+import SafeFoodEndeavor from "@/components/Home/SafeFoodEndeavor/SafeFoodEndeavor";
+import SignatureItems from "@/components/Home/SignatureItems/SignatureItems";
+import TrustSections from "@/components/Home/TrustSections/TrustSections";
+
+export default function Home() {
+  return (
+    <div>
+      <HeroContainer />
+
+      <CategorySection />
+      <SignatureItems />
+      <SafeFoodEndeavor />
+      <OurImpact />
+      <CommunityFarmers />
+      <PopularProducts />
+      <TrustSections />
+    </div>
+  );
+}
