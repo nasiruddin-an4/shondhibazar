@@ -64,6 +64,14 @@ export const ecommerceApi = API_Query.injectEndpoints({
       }),
       invalidatesTags: ["Cart"],
     }),
+    updateCartItem: builder.mutation({
+      query: ({ itemId, quantity }) => ({
+        url: `cart/items/${itemId}`,
+        method: "PATCH",
+        body: { quantity },
+      }),
+      invalidatesTags: ["Cart"],
+    }),
 
     // -------------------------
     // 4. Wishlist Endpoints
@@ -76,6 +84,13 @@ export const ecommerceApi = API_Query.injectEndpoints({
       query: (variantId) => ({
         url: `wishlist/${variantId}`,
         method: "POST",
+      }),
+      invalidatesTags: ["Wishlist"],
+    }),
+    removeFromWishlist: builder.mutation({
+      query: (variantId) => ({
+        url: `wishlist/${variantId}`,
+        method: "DELETE",
       }),
       invalidatesTags: ["Wishlist"],
     }),
@@ -217,6 +232,17 @@ export const ecommerceApi = API_Query.injectEndpoints({
     getFarmers: builder.query({
       query: () => `farmers`,
     }),
+
+    // -------------------------
+    // 9. Contact Endpoint
+    // -------------------------
+    sendContactMessage: builder.mutation({
+      query: (data) => ({
+        url: `contact/`,
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -233,9 +259,11 @@ export const {
   useGetCartQuery,
   useAddToCartMutation,
   useRemoveFromCartMutation,
+  useUpdateCartItemMutation,
   // Wishlist
   useGetWishlistQuery,
   useAddToWishlistMutation,
+  useRemoveFromWishlistMutation,
   // Checkout
   useGetShippingZonesQuery,
   useGetShippingMethodsQuery,
@@ -262,4 +290,6 @@ export const {
   useAddAddressMutation,
   // Farmers
   useGetFarmersQuery,
+  // Contact
+  useSendContactMessageMutation,
 } = ecommerceApi;

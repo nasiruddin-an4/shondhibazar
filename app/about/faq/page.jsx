@@ -1,7 +1,10 @@
 "use client";
 import { useState } from "react";
-import { ChevronDown, Plus, Minus, Mail, User as UserIcon, HelpCircle, Send } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { ChevronDown, Plus, Minus, Mail, User as UserIcon, HelpCircle, Send, Loader2 } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import toast from "react-hot-toast";
+import { useSendContactMessageMutation } from "@/redux/API_Query/ecommerceApi";
+import { extractErrorMessage } from "@/lib/extractErrorMessage";
 
 export default function FAQPage() {
   const [openFAQ, setOpenFAQ] = useState(null);
@@ -10,6 +13,7 @@ export default function FAQPage() {
     email: "",
     question: "",
   });
+  const [sendContactMessage, { isLoading: isSubmitting }] = useSendContactMessageMutation();
 
   const faqs = [
     {
@@ -54,11 +58,19 @@ export default function FAQPage() {
     },
   ];
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
-    alert("Thank you for your question! We will get back to you soon.");
-    setFormData({ name: "", email: "", question: "" });
+    try {
+      await sendContactMessage({
+        name: formData.name,
+        email: formData.email,
+        message: formData.question,
+      }).unwrap();
+      toast.success("Thank you for your question! We will get back to you soon.");
+      setFormData({ name: "", email: "", question: "" });
+    } catch (err) {
+      toast.error(extractErrorMessage(err, "Couldn't send your question — please try again"));
+    }
   };
 
   const handleInputChange = (e) => {
@@ -201,10 +213,11 @@ export default function FAQPage() {
 
                   <button
                     type="submit"
-                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-4 px-6 rounded-full font-bold transition-all shadow-lg shadow-emerald-500/30 transform hover:-translate-y-1 flex items-center justify-center gap-2"
+                    disabled={isSubmitting}
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-4 px-6 rounded-full font-bold transition-all shadow-lg shadow-emerald-500/30 transform hover:-translate-y-1 flex items-center justify-center gap-2 disabled:opacity-60 disabled:hover:translate-y-0"
                   >
-                    <Send className="w-5 h-5" />
-                    Send Message
+                    {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+                    {isSubmitting ? "Sending..." : "Send Message"}
                   </button>
                 </form>
               </div>

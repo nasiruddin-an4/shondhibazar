@@ -65,6 +65,12 @@ export default function ShortUserMenu() {
             >
               Orders
             </Link>
+            <Link
+              href="/wishlist"
+              className="block px-2 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded"
+            >
+              Wishlist
+            </Link>
             <button
               onClick={handleLogout}
               className="w-full text-left mt-2 px-2 py-2 text-sm text-red-600"

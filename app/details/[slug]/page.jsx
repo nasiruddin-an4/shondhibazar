@@ -26,6 +26,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { NumberCounter } from "@/lib/NumberCounter";
 import TabsSection from "@/components/ProductDetails/TabsSection";
 import { useGetProductReviewsQuery } from "@/redux/API_Query/ecommerceApi";
+import WishlistButton from "@/components/Wishlist/WishlistButton";
 
 const ProductSkeleton = () => (
   <div className="container mx-auto px-4 py-8 animate-pulse">
@@ -463,6 +464,12 @@ const ProductDetails = ({ params }) => {
                 </motion.div>
               </AnimatePresence>
             </motion.button>
+
+            <WishlistButton
+              variantId={selectedSize}
+              size={20}
+              className="h-12 sm:h-10 w-12 sm:w-10 shrink-0 flex items-center justify-center rounded-md border border-gray-200 hover:bg-gray-50 transition-colors disabled:opacity-60"
+            />
           </div>
         </motion.div>
       </motion.div>

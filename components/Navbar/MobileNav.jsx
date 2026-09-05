@@ -1,14 +1,19 @@
 // components/layout/MobileNav.js
 "use client";
-import { Menu, ShoppingCart } from "lucide-react";
+import { Menu, ShoppingCart, Heart } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "motion/react";
 import { useSelector } from "react-redux";
 import { NumberCounter } from "@/lib/NumberCounter";
+import { useGetWishlistQuery } from "@/redux/API_Query/ecommerceApi";
 
 const MobileNav = ({ onOpenCart, onOpenMenu }) => {
   const cart = useSelector((state) => state.products.cart);
   const products = useSelector((state) => state.products.products);
+  const isSignedIn = useSelector((state) => !!state.auth?.token);
+  const { data: wishlist } = useGetWishlistQuery(undefined, { skip: !isSignedIn });
+  const wishlistCount = wishlist?.items?.length || 0;
 
   // Calculate cart total
   const cartTotal = cart.reduce((total, item) => {
@@ -35,21 +40,35 @@ const MobileNav = ({ onOpenCart, onOpenMenu }) => {
           />
         </div>
 
-        <motion.button
-          whileTap={{ scale: 0.95 }}
-          onClick={onOpenCart}
-          className="relative p-2 flex items-center justify-center hover:bg-gray-100 rounded-lg group transition-colors"
-        >
-          <ShoppingCart
-            size={24}
-            className="text-gray-900 group-hover:text-green-600 transition-colors"
-          />
-          {cart.reduce((acc, item) => acc + item.quantity, 0) > 0 && (
-            <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-green-600 rounded-full">
-              {cart.reduce((acc, item) => acc + item.quantity, 0)}
-            </span>
-          )}
-        </motion.button>
+        <div className="flex items-center">
+          <Link
+            href="/wishlist"
+            className="relative p-2 flex items-center justify-center hover:bg-gray-100 rounded-lg group transition-colors"
+          >
+            <Heart size={22} className="text-gray-900 group-hover:text-green-600 transition-colors" />
+            {wishlistCount > 0 && (
+              <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-green-600 rounded-full">
+                {wishlistCount}
+              </span>
+            )}
+          </Link>
+
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={onOpenCart}
+            className="relative p-2 flex items-center justify-center hover:bg-gray-100 rounded-lg group transition-colors"
+          >
+            <ShoppingCart
+              size={24}
+              className="text-gray-900 group-hover:text-green-600 transition-colors"
+            />
+            {cart.reduce((acc, item) => acc + item.quantity, 0) > 0 && (
+              <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-green-600 rounded-full">
+                {cart.reduce((acc, item) => acc + item.quantity, 0)}
+              </span>
+            )}
+          </motion.button>
+        </div>
       </div>
     </div>
   );

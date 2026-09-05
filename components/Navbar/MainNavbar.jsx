@@ -4,12 +4,13 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { ShoppingCart, ChevronDown } from "lucide-react";
+import { ShoppingCart, ChevronDown, Heart } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useSelector, useDispatch } from "react-redux";
 import AuthModal from "@/components/Auth/AuthModal";
 import ShortUserMenu from "@/components/Auth/ShortUserMenu";
 import { NumberCounter } from "@/lib/NumberCounter";
+import { useGetWishlistQuery } from "@/redux/API_Query/ecommerceApi";
 
 const menuItems = [
   // {
@@ -40,6 +41,21 @@ const menuItems = [
 ];
 
 const moreItems = ["Beverages", "Snacks", "Personal Care", "Household"];
+
+const WishlistButton = ({ isSignedIn }) => {
+  const { data: wishlist } = useGetWishlistQuery(undefined, { skip: !isSignedIn });
+  const count = wishlist?.items?.length || 0;
+  return (
+    <Link href="/wishlist" className="relative p-2 flex items-center justify-center group">
+      <Heart size={24} className="text-gray-700 group-hover:text-green-600 transition-colors duration-300" />
+      {count > 0 && (
+        <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-green-600 rounded-full">
+          {count}
+        </span>
+      )}
+    </Link>
+  );
+};
 
 const CartButton = ({ onOpenCart, cartCount }) => (
   <motion.button
@@ -226,6 +242,8 @@ const MainNavbar = ({ onOpenCart }) => {
             ) : (
               <ShortUserMenu />
             )}
+
+            <WishlistButton isSignedIn={isSignedIn} />
 
             <CartButton cartCount={cart.reduce((acc, item) => acc + item.quantity, 0)} onOpenCart={onOpenCart} />
           </div>

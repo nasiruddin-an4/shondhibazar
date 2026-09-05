@@ -10,7 +10,7 @@ import {
 import { extractErrorMessage } from "@/lib/extractErrorMessage";
 import OTPStep from "./OTPStep";
 
-export default function RegisterForm({ onSuccess }) {
+export default function RegisterForm({ onSuccess, onStepChange }) {
   const [step, setStep] = useState("form"); // "form" | "otp"
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -22,6 +22,11 @@ export default function RegisterForm({ onSuccess }) {
   const [register, { isLoading }] = useRegisterMutation();
   const [fetchProfile] = useLazyGetUserProfileQuery();
   const [sendOtp] = useSendOtpMutation();
+
+  const goToStep = (s) => {
+    setStep(s);
+    onStepChange?.(s);
+  };
 
   const submit = async (e) => {
     e.preventDefault();
@@ -37,22 +42,23 @@ export default function RegisterForm({ onSuccess }) {
       const user = await fetchProfile().unwrap();
       dispatch(setCredentials({ token: tokens.access_token, user }));
 
+      // Always show the OTP screen after successful registration.
+      // If the initial OTP send fails, the user can retry via "Resend code".
       try {
         const otpRes = await sendOtp().unwrap();
         setDevOtp(otpRes.dev_otp || null);
-        setStep("otp");
       } catch (otpErr) {
-        // Account was created fine; OTP sending failed for some reason (e.g. provider
-        // outage). Don't block the user from continuing — they can verify later.
-        onSuccess?.();
+        // OTP send failed (provider outage, rate limit, etc.) — not critical.
+        // The OTP screen will still render and the user can hit "Resend code".
       }
+      goToStep("otp");
     } catch (err) {
       setError(extractErrorMessage(err, "Could not create your account."));
     }
   };
 
   if (step === "otp") {
-    return <OTPStep phone={phone} initialDevOtp={devOtp} onVerified={() => onSuccess?.()} onSkip={() => onSuccess?.()} />;
+    return <OTPStep phone={phone} initialDevOtp={devOtp} onVerified={() => onSuccess?.()} />;
   }
 
   return (

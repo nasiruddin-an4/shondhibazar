@@ -24,6 +24,7 @@ const poppins = Poppins({
   variable: "--font-inter",
 });
 export const metadata = {
+  metadataBase: new URL("https://shondhibazar.com"),
   title: "ShondhiBazar - Your Trusted Online Grocery Store",
   keywords:
     "online grocery, fresh produce, safe food, artisan products, community farmers, sustainable shopping",

@@ -9,6 +9,7 @@ import {
   removeFromCart,
 } from "@/redux/API_Slices/productSlice";
 import { NumberCounter } from "@/lib/NumberCounter";
+import WishlistButton from "@/components/Wishlist/WishlistButton";
 import Link from "next/link";
 
 const ProductCardSkeleton = () => (
@@ -165,6 +166,9 @@ const ProductCard = ({ product, isLoading = false }) => {
                 -{product.discount}%
               </motion.div>
             )}
+            <div className="absolute top-2 right-2 z-10">
+              <WishlistButton variantId={selectedSize || product.sizes?.[0]?.id} />
+            </div>
             <Link href={`/details/${product?.slug || product?.id}`} className="block w-full h-full">
               <motion.img
                 src={product.image}

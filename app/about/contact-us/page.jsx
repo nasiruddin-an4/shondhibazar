@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import {
   Phone,
   Mail,
@@ -18,6 +18,9 @@ import {
   Briefcase
 } from "lucide-react";
 import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
+import toast from "react-hot-toast";
+import { useSendContactMessageMutation } from "@/redux/API_Query/ecommerceApi";
+import { extractErrorMessage } from "@/lib/extractErrorMessage";
 
 const ContactUs = () => {
   const [formState, setFormState] = useState({
@@ -27,17 +30,25 @@ const ContactUs = () => {
     company: "",
     message: "",
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState("idle");
+  const [sendContactMessage, { isLoading: isSubmitting }] = useSendContactMessageMutation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setIsSubmitting(false);
-    setSubmitStatus("success");
-    setFormState({ name: "", email: "", phone: "", company: "", message: "" });
-    setTimeout(() => setSubmitStatus("idle"), 5000);
+    try {
+      await sendContactMessage({
+        name: formState.name,
+        email: formState.email,
+        phone: formState.phone || undefined,
+        company: formState.company || undefined,
+        message: formState.message,
+      }).unwrap();
+      setSubmitStatus("success");
+      setFormState({ name: "", email: "", phone: "", company: "", message: "" });
+      setTimeout(() => setSubmitStatus("idle"), 5000);
+    } catch (err) {
+      toast.error(extractErrorMessage(err, "Couldn't send your message — please try again"));
+    }
   };
 
   const contactMethods = [
