@@ -7,8 +7,13 @@ import { Plus, Minus, ShoppingCart } from "lucide-react";
 import { selectSize, addToCart } from "@/redux/API_Slices/productSlice";
 import ProductCard from "../PopularProducts/ProductCard";
 
+const SIGNATURE_ITEMS_LIMIT = 8;
+
 const SignatureItems = () => {
-  const products = useSelector((state) => state.products.products);
+  const allProducts = useSelector((state) => state.products.products);
+  const products = allProducts.slice(0, SIGNATURE_ITEMS_LIMIT);
+
+  if (products.length === 0) return null;
 
   return (
     <section className="py-16 bg-gray-50">

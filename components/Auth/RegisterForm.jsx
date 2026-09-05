@@ -1,34 +1,70 @@
 "use client";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { handleQuestion } from "@/redux/API_Slices/AuthSlice";
+import { setCredentials } from "@/redux/API_Slices/AuthSlice";
+import {
+  useRegisterMutation,
+  useLazyGetUserProfileQuery,
+  useSendOtpMutation,
+} from "@/redux/API_Query/ecommerceApi";
+import { extractErrorMessage } from "@/lib/extractErrorMessage";
+import OTPStep from "./OTPStep";
 
 export default function RegisterForm({ onSuccess }) {
+  const [step, setStep] = useState("form"); // "form" | "otp"
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [devOtp, setDevOtp] = useState(null);
   const dispatch = useDispatch();
+  const [register, { isLoading }] = useRegisterMutation();
+  const [fetchProfile] = useLazyGetUserProfileQuery();
+  const [sendOtp] = useSendOtpMutation();
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    // Fake register
-    setTimeout(() => {
-      setLoading(false);
-      // In a real app, call API, handle errors, store tokens, etc.
+    setError(null);
+    try {
+      const tokens = await register({ name, email, phone, password }).unwrap();
+      dispatch(
+        setCredentials({
+          token: tokens.access_token,
+          refreshToken: tokens.refresh_token,
+        })
+      );
+      const user = await fetchProfile().unwrap();
+      dispatch(setCredentials({ token: tokens.access_token, user }));
+
       try {
-        localStorage.setItem("sb_user", JSON.stringify({ name, email }));
-      } catch (err) {}
-      dispatch(handleQuestion(true));
-      if (onSuccess) onSuccess();
-    }, 900);
+        const otpRes = await sendOtp().unwrap();
+        setDevOtp(otpRes.dev_otp || null);
+        setStep("otp");
+      } catch (otpErr) {
+        // Account was created fine; OTP sending failed for some reason (e.g. provider
+        // outage). Don't block the user from continuing — they can verify later.
+        onSuccess?.();
+      }
+    } catch (err) {
+      setError(extractErrorMessage(err, "Could not create your account."));
+    }
   };
 
+  if (step === "otp") {
+    return <OTPStep phone={phone} initialDevOtp={devOtp} onVerified={() => onSuccess?.()} onSkip={() => onSuccess?.()} />;
+  }
+
   return (
-    <form onSubmit={submit} className="space-y-4">
+    <form onSubmit={submit} className="space-y-5">
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-2.5">
+          {error}
+        </div>
+      )}
+
       <div>
-        <label className="block text-sm font-medium text-gray-700">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
           Full name
         </label>
         <input
@@ -36,23 +72,41 @@ export default function RegisterForm({ onSuccess }) {
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
-          className="mt-1 block w-full border border-gray-200 rounded p-2"
+          placeholder="e.g. John Doe"
+          className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500 transition-all placeholder:text-gray-400"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700">Email</label>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Email address
+        </label>
         <input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="mt-1 block w-full border border-gray-200 rounded p-2"
+          placeholder="you@example.com"
+          className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500 transition-all placeholder:text-gray-400"
         />
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700">
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Phone number
+        </label>
+        <input
+          type="tel"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          required
+          placeholder="e.g. 01712345678"
+          className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500 transition-all placeholder:text-gray-400"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
           Password
         </label>
         <input
@@ -60,19 +114,18 @@ export default function RegisterForm({ onSuccess }) {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          className="mt-1 block w-full border border-gray-200 rounded p-2"
+          placeholder="••••••••"
+          className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500 transition-all placeholder:text-gray-400"
         />
       </div>
 
-      <div className="flex items-center justify-end">
-        <button
-          type="submit"
-          disabled={loading}
-          className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-60"
-        >
-          {loading ? "Creating..." : "Create account"}
-        </button>
-      </div>
+      <button
+        type="submit"
+        disabled={isLoading}
+        className="w-full py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 disabled:bg-green-400 disabled:cursor-not-allowed transition-colors shadow-sm mt-2"
+      >
+        {isLoading ? "Creating account..." : "Create account"}
+      </button>
     </form>
   );
 }

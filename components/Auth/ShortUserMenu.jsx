@@ -1,42 +1,14 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { useDispatch } from "react-redux";
-import { handleQuestion } from "@/redux/API_Slices/AuthSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "@/redux/API_Slices/AuthSlice";
 
 export default function ShortUserMenu() {
   const [open, setOpen] = useState(false);
-  const [user, setUser] = useState(null);
+  const user = useSelector((state) => state.auth?.user);
   const dispatch = useDispatch();
   const ref = useRef();
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem("sb_user");
-      if (raw) setUser(JSON.parse(raw));
-    } catch (err) {}
-  }, []);
-
-  // Listen for updates to the user (from profile page) or storage changes from other tabs
-  useEffect(() => {
-    const onUpdate = () => {
-      try {
-        const raw = localStorage.getItem("sb_user");
-        setUser(raw ? JSON.parse(raw) : null);
-      } catch (err) {}
-    };
-
-    const onStorage = (e) => {
-      if (e.key === "sb_user") onUpdate();
-    };
-
-    window.addEventListener("sb_user_updated", onUpdate);
-    window.addEventListener("storage", onStorage);
-    return () => {
-      window.removeEventListener("sb_user_updated", onUpdate);
-      window.removeEventListener("storage", onStorage);
-    };
-  }, []);
 
   useEffect(() => {
     const onDoc = (e) => {
@@ -46,11 +18,9 @@ export default function ShortUserMenu() {
     return () => document.removeEventListener("click", onDoc);
   }, []);
 
-  const logout = () => {
-    try {
-      localStorage.removeItem("sb_user");
-    } catch (err) {}
-    dispatch(handleQuestion(false));
+  const handleLogout = () => {
+    dispatch(logout());
+    setOpen(false);
   };
 
   const initials = (user?.name || "U")
@@ -67,16 +37,7 @@ export default function ShortUserMenu() {
         title={user?.name || "User"}
         className="w-10 h-10 rounded-full bg-green-600 text-white flex items-center justify-center font-medium hover:opacity-90 transition"
       >
-        {user?.avatar ? (
-          // show avatar image if provided
-          <img
-            src={user.avatar}
-            alt="avatar"
-            className="w-10 h-10 rounded-full object-cover"
-          />
-        ) : (
-          <span>{initials}</span>
-        )}
+        <span>{initials}</span>
       </button>
 
       {open && (
@@ -105,7 +66,7 @@ export default function ShortUserMenu() {
               Orders
             </Link>
             <button
-              onClick={logout}
+              onClick={handleLogout}
               className="w-full text-left mt-2 px-2 py-2 text-sm text-red-600"
             >
               Logout

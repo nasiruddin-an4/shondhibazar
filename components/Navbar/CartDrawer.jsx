@@ -31,7 +31,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
     dispatch(
       updateCartQuantity({
         productId: item.productId,
-        size: item.size,
+        variantId: item.variantId,
         quantity: newQuantity,
       })
     );
@@ -42,7 +42,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
     dispatch(
       removeFromCart({
         productId: item.productId,
-        size: item.size,
+        variantId: item.variantId,
       })
     );
   };
@@ -91,7 +91,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
                       const product = getProductDetails(item.productId);
                       return (
                         <div
-                          key={`${item.productId}-${item.size}`}
+                          key={`${item.productId}-${item.variantId}`}
                           className="flex items-center justify-between border-b pb-4"
                         >
                           <div className="flex items-center space-x-4">

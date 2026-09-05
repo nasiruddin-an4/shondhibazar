@@ -4,6 +4,7 @@ import NavbarWrapper from "@/components/Navbar/NavbarWrapper";
 import FooterContainer from "@/components/Footer/FooterContainer";
 import { Providers } from "../redux/provider";
 import { Poppins } from "next/font/google";
+import { Toaster } from "react-hot-toast";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -67,6 +68,7 @@ export default function RootLayout({ children }) {
           <NavbarWrapper />
           {children}
           <FooterContainer />
+          <Toaster position="top-right" />
         </Providers>
       </body>
     </html>

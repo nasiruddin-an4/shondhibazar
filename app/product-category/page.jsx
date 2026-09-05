@@ -2,11 +2,14 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight, ChevronDown, X, Filter } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
 import ProductCard from "@/components/ProductCategory/ProductCard";
 import { useSelector } from "react-redux";
+import { Suspense } from "react";
 
 const categories = [
+  { name: "All Products", count: 133 },
   { name: "Storage and carry", count: 6 },
   { name: "chicken & Meat", count: 7 },
   { name: "Monthly Package", bengali: "মাসিক প্যাকেজ", count: 11 },
@@ -33,11 +36,12 @@ const categories = [
   { name: "Pickles", bengali: "আচার", count: 13 },
   { name: "Dried Fish", bengali: "শুঁটকি", count: 7 },
   { name: "Dry Food", count: 29 },
-  { name: "All Products", count: 133 },
 ];
 
-export default function ProductGrid() {
-  const [expandedCategory, setExpandedCategory] = useState("Spices");
+function ProductGridContent() {
+  const searchParams = useSearchParams();
+  const categoryParam = searchParams.get("category");
+  const [expandedCategory, setExpandedCategory] = useState(categoryParam || "All Products");
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [priceRange, setPriceRange] = useState([0, 86000]);
@@ -45,15 +49,78 @@ export default function ProductGrid() {
   const [sortBy, setSortBy] = useState("default");
   const itemsPerPage = 24;
 
+  useEffect(() => {
+    if (categoryParam) {
+      setExpandedCategory(categoryParam);
+      setCurrentPage(1);
+    }
+  }, [categoryParam]);
+
   // Simulate loading
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 2000);
     return () => clearTimeout(timer);
   }, []);
 
-  const products = useSelector((state) => state.products.products);
+  const allProducts = useSelector((state) => state.products.products);
+  
+  const matchCategory = (product, catName) => {
+    if (!catName || catName.toLowerCase() === "all products") return true;
+    const catLower = catName.toLowerCase();
+    
+    // Check product.category (e.g. "RICE")
+    if (product.category) {
+      const pc = product.category.toLowerCase();
+      if (pc === catLower || pc.includes(catLower) || catLower.includes(pc)) return true;
+    }
+    
+    // Check product.categories array (e.g. ["CHICKEN & MEAT"])
+    if (product.categories) {
+      const match = product.categories.some(c => {
+        const cl = c.toLowerCase();
+        return cl === catLower || cl.includes(catLower) || catLower.includes(cl);
+      });
+      if (match) return true;
+    }
+    
+    return false;
+  };
+
+  const getSubcategoryCount = (subName) => {
+    return allProducts.filter(product => matchCategory(product, subName)).length;
+  };
+
+  const getCategoryCount = (category) => {
+    if (category.name.toLowerCase() === "all products") return allProducts.length;
+    return allProducts.filter(product => {
+      if (matchCategory(product, category.name)) return true;
+      if (category.subcategories) {
+        return category.subcategories.some(sub => matchCategory(product, sub.name));
+      }
+      return false;
+    }).length;
+  };
+
+  const products = allProducts.filter(product => {
+    if (matchCategory(product, expandedCategory)) return true;
+    
+    // Also try to match subcategories if the expanded category matches a parent category
+    if (expandedCategory) {
+      const catLower = expandedCategory.toLowerCase();
+      const categoryObj = categories.find(c => 
+        c.name.toLowerCase() === catLower || 
+        c.name.toLowerCase().includes(catLower) || 
+        catLower.includes(c.name.toLowerCase())
+      );
+      if (categoryObj && categoryObj.subcategories) {
+        return categoryObj.subcategories.some(sub => matchCategory(product, sub.name));
+      }
+    }
+    return false;
+  });
+
   const totalProducts = products.length;
-  const totalPages = Math.ceil(totalProducts / itemsPerPage);
+  const totalPages = Math.max(1, Math.ceil(totalProducts / itemsPerPage));
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, totalProducts);
 
@@ -74,10 +141,10 @@ export default function ProductGrid() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const PaginationControls = () => (
+  const renderPaginationControls = () => (
     <div className="flex flex-col sm:flex-row justify-between items-center gap-4 w-full">
       <p className="text-sm text-gray-600">
-        Showing {startIndex + 1}–{endIndex} of {totalProducts} results
+        Showing {totalProducts === 0 ? 0 : startIndex + 1}–{endIndex} of {totalProducts} results
       </p>
       <div className="flex items-center gap-2">
         <select
@@ -99,19 +166,21 @@ export default function ProductGrid() {
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-            <button
-              key={page}
-              onClick={() => handlePageChange(page)}
-              className={`w-8 h-8 flex items-center justify-center rounded text-sm transition-colors ${
-                page === currentPage
-                  ? "bg-green-500 text-white hover:bg-green-600"
-                  : "hover:bg-gray-50"
-              }`}
-            >
-              {page}
-            </button>
-          ))}
+          <>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                onClick={() => handlePageChange(page)}
+                className={`w-8 h-8 flex items-center justify-center rounded text-sm transition-colors ${
+                  page === currentPage
+                    ? "bg-green-500 text-white hover:bg-green-600"
+                    : "hover:bg-gray-50"
+                }`}
+              >
+                {page}
+              </button>
+            ))}
+          </>
           <button
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
@@ -122,6 +191,26 @@ export default function ProductGrid() {
         </div>
       </div>
     </div>
+  );
+
+  const renderLoadingCards = () => (
+    <>
+      {Array.from({ length: itemsPerPage }).map((_, i) => (
+        <ProductCard key={`skeleton-${i}`} isLoading={true} />
+      ))}
+    </>
+  );
+
+  const renderProductCards = () => (
+    <>
+      {products.slice(startIndex, endIndex).map((product) => (
+        <ProductCard
+          key={`product-${product.id}`}
+          product={product}
+          isLoading={false}
+        />
+      ))}
+    </>
   );
 
   return (
@@ -168,9 +257,10 @@ export default function ProductGrid() {
               PRODUCT CATEGORIES
             </h2>
             <ul className="space-y-2">
-              {categories.map((category) => (
-                <li
-                  key={category.name}
+              <>
+                {categories.map((category) => (
+                  <li
+                    key={category.name}
                   className={`
                   ${
                     expandedCategory === category.name && category.subcategories
@@ -199,7 +289,7 @@ export default function ProductGrid() {
                       )}
                     </button>
                     <span className="text-gray-500 text-sm">
-                      ({category.count})
+                      ({getCategoryCount(category)})
                     </span>
                   </div>
                   <AnimatePresence>
@@ -212,7 +302,8 @@ export default function ProductGrid() {
                           transition={{ duration: 0.3 }}
                           className="ml-4 mt-1 space-y-1"
                         >
-                          {category.subcategories.map((sub) => (
+                          <>
+                            {category.subcategories.map((sub) => (
                             <motion.li
                               key={sub.name}
                               initial={{ opacity: 0, x: -10 }}
@@ -233,15 +324,17 @@ export default function ProductGrid() {
                                 )}
                               </Link>
                               <span className="text-gray-500 text-sm">
-                                ({sub.count})
+                                ({getSubcategoryCount(sub.name)})
                               </span>
                             </motion.li>
                           ))}
+                          </>
                         </motion.ul>
                       )}
                   </AnimatePresence>
                 </li>
               ))}
+              </>
             </ul>
           </div>
 
@@ -286,31 +379,27 @@ export default function ProductGrid() {
                   <span className="text-sm">Filters</span>
                 </button>
               </div>
-              <PaginationControls />
+              {renderPaginationControls()}
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4  gap-6">
-            {isLoading
-              ? Array.from({ length: itemsPerPage }).map((_, i) => (
-                  <ProductCard key={i} isLoading={true} />
-                ))
-              : products
-                  .slice(startIndex, endIndex)
-                  .map((product) => (
-                    <ProductCard
-                      key={product.id}
-                      product={product}
-                      isLoading={false}
-                    />
-                  ))}
+            {isLoading ? renderLoadingCards() : renderProductCards()}
           </div>
 
           <div className="mt-12">
-            <PaginationControls />
+            {renderPaginationControls()}
           </div>
         </main>
       </div>
     </div>
+  );
+}
+
+export default function ProductGrid() {
+  return (
+    <Suspense fallback={<div className="flex justify-center p-20">Loading products...</div>}>
+      <ProductGridContent />
+    </Suspense>
   );
 }

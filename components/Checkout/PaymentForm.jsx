@@ -15,9 +15,9 @@ const PaymentForm = ({ onSubmit, isLoading }) => {
       icon: Wallet,
     },
     {
-      id: "bkash",
-      name: "bKash",
-      description: "Pay using your bKash account",
+      id: "online",
+      name: "Online Payment",
+      description: "Pay securely by card, bKash, Nagad, Rocket or internet banking",
       icon: CreditCard,
     },
   ];
@@ -73,11 +73,11 @@ const PaymentForm = ({ onSubmit, isLoading }) => {
         })}
       </div>
 
-      {paymentMethod === "bkash" && (
-        <div className="bg-yellow-50 border border-yellow-100 rounded-lg p-4">
-          <p className="text-sm text-yellow-700">
-            After placing the order, you will receive bKash payment instructions
-            via SMS.
+      {paymentMethod === "online" && (
+        <div className="bg-blue-50 border border-blue-100 rounded-lg p-4">
+          <p className="text-sm text-blue-700">
+            After placing the order, you'll be redirected to our payment
+            partner to complete your payment.
           </p>
         </div>
       )}

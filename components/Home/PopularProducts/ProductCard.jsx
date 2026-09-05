@@ -66,7 +66,7 @@ const ProductCard = ({ product, isLoading = false }) => {
 
   // Find cart item
   const cartItem = cartItems.find(
-    (item) => item.productId === product.id && item.size === selectedSize
+    (item) => item.productId === product.id && item.variantId === selectedSize
   );
 
   // Update local quantity when cart changes
@@ -94,12 +94,12 @@ const ProductCard = ({ product, isLoading = false }) => {
       const defaultSize = product.sizes[0];
       return defaultSize ? defaultSize.price * quantity : null;
     }
-    const sizeOption = product.sizes.find((s) => s.size === selectedSize);
+    const sizeOption = product.sizes.find((s) => s.id === selectedSize);
     return sizeOption ? sizeOption.price * quantity : null;
   };
 
-  const handleSizeSelect = (size) => {
-    dispatch(selectSize({ productId: product.id, size }));
+  const handleSizeSelect = (sizeOption) => {
+    dispatch(selectSize({ productId: product.id, variantId: sizeOption.id }));
     setQuantity(1);
   };
 
@@ -112,14 +112,14 @@ const ProductCard = ({ product, isLoading = false }) => {
         dispatch(
           removeFromCart({
             productId: product.id,
-            size: selectedSize,
+            variantId: selectedSize,
           })
         );
       } else {
         dispatch(
           updateCartQuantity({
             productId: product.id,
-            size: selectedSize,
+            variantId: selectedSize,
             quantity: newQuantity,
           })
         );
@@ -128,25 +128,28 @@ const ProductCard = ({ product, isLoading = false }) => {
   };
 
   const handleAddToCart = () => {
-    if (selectedSize || product.sizes[0]) {
-      const sizeToUse = selectedSize || product.sizes[0].size;
-      if (cartItem) {
-        dispatch(
-          updateCartQuantity({
-            productId: product.id,
-            size: sizeToUse,
-            quantity,
-          })
-        );
-      } else {
-        dispatch(
-          addToCart({
-            productId: product.id,
-            size: sizeToUse,
-            quantity,
-          })
-        );
-      }
+    const sizeOptionToUse = selectedSize
+      ? product.sizes.find((s) => s.id === selectedSize)
+      : product.sizes[0];
+    if (!sizeOptionToUse) return;
+
+    if (cartItem) {
+      dispatch(
+        updateCartQuantity({
+          productId: product.id,
+          variantId: sizeOptionToUse.id,
+          quantity,
+        })
+      );
+    } else {
+      dispatch(
+        addToCart({
+          productId: product.id,
+          variantId: sizeOptionToUse.id,
+          size: sizeOptionToUse.size,
+          quantity,
+        })
+      );
     }
   };
 
@@ -174,7 +177,7 @@ const ProductCard = ({ product, isLoading = false }) => {
             -{product.discount}%
           </div>
         )}
-        <Link href={`/details/${product?.id}`} className="block w-full h-full">
+        <Link href={`/details/${product?.slug || product?.id}`} className="block w-full h-full">
           <img
             src={product.image}
             alt={product.name}
@@ -197,7 +200,7 @@ const ProductCard = ({ product, isLoading = false }) => {
 
         {/* Name */}
         <Link
-          href={`/details/${product?.id}`}
+          href={`/details/${product?.slug || product?.id}`}
           className=" block text-lg font-medium mb-2 hover:text-green-500 "
         >
           {product.name}
@@ -221,10 +224,10 @@ const ProductCard = ({ product, isLoading = false }) => {
         <div className="flex flex-wrap gap-2 mb-4">
           {product.sizes.map((sizeOption) => (
             <button
-              key={sizeOption.size}
-              onClick={() => handleSizeSelect(sizeOption.size)}
+              key={sizeOption.id}
+              onClick={() => handleSizeSelect(sizeOption)}
               className={`px-3 py-1 border rounded-md text-sm transition-colors ${
-                isClient && selectedSize === sizeOption.size
+                isClient && selectedSize === sizeOption.id
                   ? "border-green-500 bg-green-50 text-green-600"
                   : "border-gray-300 hover:border-green-500"
               }`}

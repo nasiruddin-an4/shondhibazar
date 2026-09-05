@@ -1,10 +1,12 @@
 import Checkout from "@/components/Checkout/Checkout";
-import React from "react";
+import React, { Suspense } from "react";
 
 const page = () => {
   return (
     <div>
-      <Checkout />
+      <Suspense fallback={null}>
+        <Checkout />
+      </Suspense>
     </div>
   );
 };

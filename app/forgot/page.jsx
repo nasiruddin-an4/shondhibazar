@@ -1,19 +1,22 @@
 "use client";
 import { useState } from "react";
 import Loader from "@/components/Checkout/Loader";
+import { useForgotPasswordMutation } from "@/redux/API_Query/ecommerceApi";
 
 export default function ForgotPage() {
   const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
+  const [forgotPassword, { isLoading: loading }] = useForgotPasswordMutation();
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setSent(true);
-    }, 900);
+    try {
+      await forgotPassword({ email }).unwrap();
+    } catch (err) {
+      // Backend intentionally returns the same generic response whether or not
+      // the email exists, so we still show the "check your inbox" state on error.
+    }
+    setSent(true);
   };
 
   return (

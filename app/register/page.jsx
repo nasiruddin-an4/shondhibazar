@@ -6,7 +6,7 @@ export default function RegisterPage() {
   const [open, setOpen] = useState(true);
   return (
     <div className="min-h-screen flex items-center justify-center">
-      <AuthModal open={open} onClose={() => setOpen(false)} />
+      <AuthModal open={open} onClose={() => setOpen(false)} initialMode="register" />
       {!open && (
         <div className="text-center">
           <p className="text-lg">

@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { motion } from "motion/react";
 import TopNavbar from "./TopNavbar";
 import MainNavbar from "./MainNavbar";
@@ -33,7 +33,9 @@ const NavbarWrapper = () => {
           }}
         >
           <TopNavbar />
-          <MainNavbar onOpenCart={() => setIsCartOpen(true)} />
+          <Suspense fallback={<div className="h-[72px] w-full bg-gray-50 animate-pulse" />}>
+            <MainNavbar onOpenCart={() => setIsCartOpen(true)} />
+          </Suspense>
         </motion.div>
       </div>
 

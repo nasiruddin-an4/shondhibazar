@@ -25,147 +25,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { motion, AnimatePresence } from "motion/react";
 import { NumberCounter } from "@/lib/NumberCounter";
 import TabsSection from "@/components/ProductDetails/TabsSection";
-
-const reviews = [
-  {
-    id: 1,
-    name: "Karim Ahmed",
-    rating: 5,
-    date: "March 15, 2024",
-    comment:
-      "আমি এই চাল খুবই পছন্দ করি। চালের মান খুব ভালো এবং স্বাদও খুব ভালো।",
-    verified: true,
-  },
-  {
-    id: 2,
-    name: "Rahima Begum",
-    rating: 4,
-    date: "March 10, 2024",
-    comment:
-      "পরিষ্কার এবং ভালো মানের চাল। প্যাকেজিং ভালো ছিল। কিন্তু দাম একটু বেশি।",
-    verified: true,
-  },
-  {
-    id: 3,
-    name: "Mohammad Hasan",
-    rating: 5,
-    date: "March 5, 2024",
-    comment: "খুব ভালো প্রোডাক্ট। ডেলিভারি সার্ভিসও ভালো।",
-    verified: true,
-  },
-];
-
-const relatedProduct = [
-  {
-    id: 1,
-    name: "ডেকিছাটা চাল [Dhekichata Rice]",
-    category: "RICE",
-    price: { min: 125.0, max: 3125.0 },
-    sizes: [
-      { size: "1kg", price: 125.0 },
-      { size: "5kg", price: 625.0 },
-      { size: "25kg", price: 3125.0 },
-    ],
-    image:
-      "/products/spices/roasted-spice-powder.jpg",
-  },
-  {
-    id: 2,
-    name: "জিঙ্ক সমৃদ্ধ চাল(২৫ কেজি) [Zink Rice]",
-    category: "RICE",
-    price: { min: 90.0, max: 2250.0 },
-    sizes: [
-      { size: "1kg", price: 90.0 },
-      { size: "5kg", price: 450.0 },
-      { size: "25kg", price: 2250.0 },
-    ],
-    image:
-      "/products/rice/zinc-enriched-rice.webp",
-  },
-  {
-    id: 3,
-    name: "পরেশ ঘি [Ghee]",
-    categories: ["ALL PRODUCTS", "OIL & GHEE"],
-    price: { min: 550.0, max: 2100.0 },
-    sizes: [
-      { size: "250gm", price: 550.0 },
-      { size: "500gm", price: 1100.0 },
-      { size: "1kg", price: 2100.0 },
-    ],
-    image:
-      "/products/ghee/pure-ghee-3.webp",
-    discount: 5,
-  },
-  {
-    id: 4,
-    name: "প্রিমিয়াম পাওয়া ঘি [Ghee]",
-    categories: ["ALL PRODUCTS", "DIET FOODS", "OIL & GHEE"],
-    price: { min: 450.0, max: 1600.0 },
-    sizes: [
-      { size: "250gm", price: 450.0 },
-      { size: "500gm", price: 900.0 },
-      { size: "1kg", price: 1600.0 },
-    ],
-    image:
-      "/products/ghee/pure-ghee-1.webp",
-    discount: 11,
-  },
-  {
-    id: 5,
-    name: "পাওয়া ঘি [Ghee]",
-    categories: ["ALL PRODUCTS", "DIET FOODS", "OIL & GHEE"],
-    price: { min: 350.0, max: 1300.0 },
-    sizes: [
-      { size: "250gm", price: 350.0 },
-      { size: "1kg", price: 1300.0 },
-      { size: "500g", price: 650.0 },
-    ],
-    image:
-      "/products/ghee/pure-ghee-4.webp",
-    discount: 7,
-  },
-  {
-    id: 6,
-    name: "সরষে খাঁটি ভাঙ্গা সরিষার তেল [extra virgin mustard oil]",
-    categories: ["ALL PRODUCTS", "OIL", "OIL & GHEE"],
-    price: { min: 135.0, max: 2300.0 },
-    sizes: [
-      { size: "225ml", price: 135.0 },
-      { size: "1L", price: 460.0 },
-      { size: "5L", price: 2300.0 },
-    ],
-    image:
-      "/products/oil/mustard-oil-small-1.webp",
-    discount: 4,
-  },
-  {
-    id: 7,
-    name: "নিরাপদ মুরগীর মুরগী [Safe Broiler] (Skin Off)",
-    categories: ["CHICKEN & MEAT"],
-    price: { min: 480.0, max: 2400.0 },
-    sizes: [
-      { size: "1kg", price: 480.0 },
-      { size: "5kg", price: 2400.0 },
-    ],
-    image:
-      "/products/meat-poultry/safe-chicken-nirapod-murgi.gif",
-  },
-  {
-    id: 8,
-    name: "মরিচ গুঁড়া [Chili Powder]",
-    categories: ["SPICE POWDER", "SPICES"],
-    price: { min: 45.0, max: 840.0 },
-    sizes: [
-      { size: "50gm", price: 45.0 },
-      { size: "100gm", price: 90.0 },
-      { size: "250gm", price: 210.0 },
-      { size: "500gm", price: 420.0 },
-      { size: "1kg", price: 840.0 },
-    ],
-    image:
-      "/products/spices/chili-morich.webp",
-  },
-];
+import { useGetProductReviewsQuery } from "@/redux/API_Query/ecommerceApi";
 
 const ProductSkeleton = () => (
   <div className="container mx-auto px-4 py-8 animate-pulse">
@@ -216,10 +76,22 @@ const ProductDetails = ({ params }) => {
   }, []);
 
   const resolvedParams = use(params);
-  const productId = parseInt(resolvedParams.slug);
+  const routeSlug = resolvedParams.slug;
 
   const products = useSelector((state) => state.products.products);
-  const product = products.find((p) => p.id === productId);
+  // Support both the SEO-friendly slug and the raw id (old links / directly-shared UUIDs
+  // still resolve), but the cart/selection identity below always uses the real product id.
+  const product = products.find((p) => p.slug === routeSlug || p.id === routeSlug);
+  const productId = product?.id;
+
+  const relatedProducts = product
+    ? products.filter((p) => p.id !== product.id && p.category === product.category).slice(0, 4)
+    : [];
+
+  const { data: reviewsRes, isLoading: reviewsLoading } = useGetProductReviewsQuery(productId, {
+    skip: !product,
+  });
+  const reviews = reviewsRes?.data || [];
 
   const selectedSize = useSelector(
     (state) => state.products.selectedSize[productId]
@@ -227,7 +99,7 @@ const ProductDetails = ({ params }) => {
   const cartItems = useSelector((state) => state.products.cart);
   const cartItem = isClient
     ? cartItems.find(
-        (item) => item.productId === productId && item.size === selectedSize
+        (item) => item.productId === productId && item.variantId === selectedSize
       )
     : null;
 
@@ -256,12 +128,12 @@ const ProductDetails = ({ params }) => {
     if (!selectedSize) {
       return null;
     }
-    const sizeOption = product?.sizes.find((s) => s.size === selectedSize);
+    const sizeOption = product?.sizes.find((s) => s.id === selectedSize);
     return sizeOption ? sizeOption.price * quantity : null;
   };
 
-  const handleSizeSelect = (size) => {
-    dispatch(selectSize({ productId, size }));
+  const handleSizeSelect = (sizeOption) => {
+    dispatch(selectSize({ productId, variantId: sizeOption.id }));
     setQuantity(1);
     setShowQuantityControls(true);
   };
@@ -299,20 +171,22 @@ const ProductDetails = ({ params }) => {
       dispatch(
         updateCartQuantity({
           productId,
-          size: selectedSize,
+          variantId: selectedSize,
           quantity: newQuantity,
         })
       );
     }
   };
   const handleAddToCart = () => {
-    if (selectedSize || product.sizes[0]) {
-      const sizeToUse = selectedSize || product.sizes[0].size;
+    const sizeOptionToUse = selectedSize
+      ? product.sizes.find((s) => s.id === selectedSize)
+      : product.sizes[0];
+    if (sizeOptionToUse) {
       if (cartItem) {
         dispatch(
           updateCartQuantity({
             productId,
-            size: sizeToUse,
+            variantId: sizeOptionToUse.id,
             quantity,
           })
         );
@@ -320,7 +194,8 @@ const ProductDetails = ({ params }) => {
         dispatch(
           addToCart({
             productId,
-            size: sizeToUse,
+            variantId: sizeOptionToUse.id,
+            size: sizeOptionToUse.size,
             quantity,
           })
         );
@@ -336,6 +211,7 @@ const ProductDetails = ({ params }) => {
   const isInCart = cartItem !== undefined;
   const totalPrice = getCurrentPrice();
   const unitPrice = totalPrice ? totalPrice / quantity : null;
+  const selectedSizeLabel = product?.sizes.find((s) => s.id === selectedSize)?.size;
 
   const handleClear = () => {
     setShowQuantityControls(false);
@@ -347,13 +223,13 @@ const ProductDetails = ({ params }) => {
       dispatch(
         removeFromCart({
           productId,
-          size: selectedSize,
+          variantId: selectedSize,
         })
       );
     }
 
     // Clear selected size by dispatching null
-    dispatch(selectSize({ productId, size: null }));
+    dispatch(selectSize({ productId, variantId: null }));
 
     // Force total price recalculation
     getCurrentPrice(); // This will now return null since selectedSize is null
@@ -494,17 +370,17 @@ const ProductDetails = ({ params }) => {
           {/* Weight Selection */}
           <motion.div className="space-y-4" variants={fadeIn}>
             <h3 className="font-medium text-gray-700">
-              WEIGHT {selectedSize && `: ${selectedSize}`}
+              WEIGHT {selectedSizeLabel && `: ${selectedSizeLabel}`}
             </h3>
             <div className="flex flex-wrap gap-3">
               {product.sizes.map((size) => (
                 <motion.button
-                  key={size.size}
+                  key={size.id}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => handleSizeSelect(size.size)}
+                  onClick={() => handleSizeSelect(size)}
                   className={`px-4 py-2 border rounded-md transition-colors ${
-                    selectedSize === size.size
+                    selectedSize === size.id
                       ? "border-green-500 bg-green-50 text-green-600"
                       : "border-gray-300 hover:border-green-500"
                   }`}
@@ -597,10 +473,12 @@ const ProductDetails = ({ params }) => {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         reviews={reviews}
+        reviewsLoading={reviewsLoading}
         isLoading={isLoading}
       />
 
       {/* Related Products */}
+      {relatedProducts.length > 0 && (
       <motion.div
         variants={fadeIn}
         initial="initial"
@@ -609,7 +487,7 @@ const ProductDetails = ({ params }) => {
       >
         <h2 className="text-2xl font-bold mb-8">Related products</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {relatedProduct?.map((item, index) => (
+          {relatedProducts.map((item, index) => (
             <motion.div
               key={item.id}
               initial={{ opacity: 0, y: 20 }}
@@ -621,6 +499,7 @@ const ProductDetails = ({ params }) => {
           ))}
         </div>
       </motion.div>
+      )}
     </motion.div>
   );
 };

@@ -105,50 +105,8 @@ const Description = ({ product }) => {
             variants={itemVariants}
             className="text-gray-600 whitespace-pre-line mb-6"
           >
-            {product.description}
+            {product.description || "No description available for this product yet."}
           </motion.p>
-        </motion.div>
-
-        <motion.div variants={sectionVariants}>
-          <motion.h4
-            variants={itemVariants}
-            className="text-lg font-medium mb-3"
-          >
-            বৈশিষ্ট্য:
-          </motion.h4>
-          <motion.ul className="list-disc pl-5 space-y-2 text-gray-600">
-            {[
-              "১০০% খাঁটি চাল",
-              "প্রাকৃতিক স্বাদ ও গন্ধ",
-              "উচ্চ পুষ্টিমান",
-              "কোন রাসায়নিক প্রক্রিয়াজাত নয়",
-              "সহজে রান্না করা যায়",
-            ].map((feature, index) => (
-              <motion.li key={index} variants={itemVariants} custom={index}>
-                {feature}
-              </motion.li>
-            ))}
-          </motion.ul>
-        </motion.div>
-
-        <motion.div variants={sectionVariants}>
-          <motion.h4
-            variants={itemVariants}
-            className="text-lg font-medium mb-3"
-          >
-            ব্যবহার বিধি:
-          </motion.h4>
-          <motion.ul className="list-disc pl-5 space-y-2 text-gray-600">
-            {[
-              "রান্নার আগে ভালোভাবে ধুয়ে নিন",
-              "প্রতি কাপ চালের জন্য দেড় কাপ পানি ব্যবহার করুন",
-              "২০-২৫ মিনিট রান্না করুন",
-            ].map((instruction, index) => (
-              <motion.li key={index} variants={itemVariants} custom={index}>
-                {instruction}
-              </motion.li>
-            ))}
-          </motion.ul>
         </motion.div>
       </div>
     </motion.div>

@@ -5,6 +5,7 @@ import AuthSlice from "./API_Slices/AuthSlice";
 import productReducer from "./API_Slices/productSlice";
 import commonSlice from "./API_Slices/commonSlice";
 import userSlice from "./API_Slices/userSlice";
+import { cartSyncMiddleware } from "./cartSyncMiddleware";
 
 // Import required redux-persist dependencies
 import { persistStore, persistReducer } from "redux-persist";
@@ -50,7 +51,7 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: ["persist/PERSIST", "persist/REHYDRATE"],
       },
-    }).concat(API_Query.middleware),
+    }).concat(API_Query.middleware, cartSyncMiddleware),
 });
 
 // Create persistor

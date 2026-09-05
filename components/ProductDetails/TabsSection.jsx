@@ -27,6 +27,7 @@ const TabsSection = ({
   activeTab,
   setActiveTab,
   reviews,
+  reviewsLoading,
   isLoading,
 }) => {
   // Animation variants for tabs
@@ -128,7 +129,7 @@ const TabsSection = ({
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            Reviews (0)
+            Reviews ({reviews?.length || 0})
             <AnimatePresence>
               {activeTab === "reviews" && (
                 <motion.span
@@ -158,7 +159,9 @@ const TabsSection = ({
         >
           {activeTab === "description" && <Description product={product} />}
           {activeTab === "additional" && <Additional product={product} />}
-          {activeTab === "reviews" && <Reviews reviews={reviews} />}
+          {activeTab === "reviews" && (
+            <Reviews reviews={reviews} productId={product.id} isLoading={reviewsLoading} />
+          )}
         </motion.div>
       </AnimatePresence>
     </motion.div>

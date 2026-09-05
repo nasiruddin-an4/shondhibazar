@@ -3,10 +3,10 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { ShoppingCart, ChevronDown } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useSelector, useDispatch } from "react-redux";
-import { handleQuestion } from "@/redux/API_Slices/AuthSlice";
 import AuthModal from "@/components/Auth/AuthModal";
 import ShortUserMenu from "@/components/Auth/ShortUserMenu";
 import { NumberCounter } from "@/lib/NumberCounter";
@@ -63,11 +63,13 @@ const CartButton = ({ onOpenCart, cartCount }) => (
 const MainNavbar = ({ onOpenCart }) => {
   const [isSticky, setIsSticky] = useState(false);
   const [hoveredItem, setHoveredItem] = useState();
+  const searchParams = useSearchParams();
+  const currentCategory = searchParams ? searchParams.get("category") : null;
 
   const cart = useSelector((state) => state.products.cart);
   const products = useSelector((state) => state.products.products);
   const dispatch = useDispatch();
-  const isSignedIn = useSelector((state) => state.auth?.signin);
+  const isSignedIn = useSelector((state) => !!state.auth?.token);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
   // Calculate cart total
@@ -85,13 +87,17 @@ const MainNavbar = ({ onOpenCart }) => {
   }, []);
 
   return (
-    <motion.nav
-      initial={false}
-      animate={isSticky ? { y: 0 } : {}}
-      className={`w-full bg-gray-50 z-50 ${
-        isSticky ? "fixed top-0 left-0 shadow-md" : ""
-      }`}
-    >
+    <>
+      {/* Spacer to prevent layout shift when navbar becomes fixed */}
+      {isSticky && <div className="h-[76px] w-full" />}
+      <motion.nav
+        initial={false}
+        animate={isSticky ? { y: [-100, 0] } : { y: 0 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className={`w-full bg-gray-50 z-50 ${
+          isSticky ? "fixed top-0 left-0 shadow-md" : "relative"
+        }`}
+      >
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
           {isSticky && (
@@ -120,13 +126,16 @@ const MainNavbar = ({ onOpenCart }) => {
                 onMouseEnter={() => setHoveredItem(item.title)}
                 onMouseLeave={() => setHoveredItem(null)}
               >
-                <motion.div
-                  className="flex items-center space-x-1 py-4 cursor-pointer"
-                  whileHover={{ color: "#059669" }}
-                >
-                  <span>{item.title}</span>
-                  <ChevronDown size={16} />
-                </motion.div>
+                <Link href={`/product-category?category=${encodeURIComponent(item.title)}`}>
+                  <div
+                    className={`flex items-center space-x-1 py-4 cursor-pointer transition-colors ${
+                      currentCategory === item.title ? "text-green-600 font-semibold" : "text-gray-800 hover:text-green-600"
+                    }`}
+                  >
+                    <span>{item.title}</span>
+                    <ChevronDown size={16} />
+                  </div>
+                </Link>
 
                 {/* Animated underline */}
                 <motion.div
@@ -149,7 +158,7 @@ const MainNavbar = ({ onOpenCart }) => {
                       {item.submenu.map((subItem) => (
                         <Link
                           key={subItem}
-                          href="/product-category"
+                          href={`/product-category?category=${encodeURIComponent(subItem)}`}
                           className="block px-4 py-2 hover:bg-gray-50 hover:text-green-600 transition-colors"
                         >
                           {subItem}
@@ -167,13 +176,14 @@ const MainNavbar = ({ onOpenCart }) => {
               onMouseEnter={() => setHoveredItem("more")}
               onMouseLeave={() => setHoveredItem(null)}
             >
-              <motion.div
-                className="flex items-center space-x-1 py-4 cursor-pointer"
-                whileHover={{ color: "#059669" }}
+              <div
+                className={`flex items-center space-x-1 py-4 cursor-pointer transition-colors ${
+                  currentCategory && moreItems.includes(currentCategory) ? "text-green-600 font-semibold" : "text-gray-800 hover:text-green-600"
+                }`}
               >
                 <span>More+</span>
                 <ChevronDown size={16} />
-              </motion.div>
+              </div>
 
               <AnimatePresence>
                 {hoveredItem === "more" && (
@@ -187,7 +197,7 @@ const MainNavbar = ({ onOpenCart }) => {
                     {moreItems.map((item) => (
                       <Link
                         key={item}
-                        href="/product-category"
+                        href={`/product-category?category=${encodeURIComponent(item)}`}
                         className="block px-4 py-2 hover:bg-gray-50 hover:text-green-600 transition-colors"
                       >
                         {item}
@@ -228,6 +238,7 @@ const MainNavbar = ({ onOpenCart }) => {
         </div>
       </div>
     </motion.nav>
+    </>
   );
 };
 

@@ -3,15 +3,15 @@
 import React from "react";
 import { Check, Package } from "lucide-react";
 
-const OrderSuccess = ({ onContinueShopping }) => {
-  // create a mock order and persist to localStorage
+const OrderSuccess = ({ orderNumber, onContinueShopping }) => {
+  const displayOrderNumber = orderNumber || "N/A";
+
+  // persist a lightweight local record so the (mock) /orders page can list it
   React.useEffect(() => {
     try {
-      const id = "ORD-" + Math.random().toString(36).substr(2, 9).toUpperCase();
       const order = {
-        id,
+        id: displayOrderNumber,
         date: new Date().toISOString(),
-        total: (Math.random() * 2000 + 100).toFixed(2),
         status: "Processing",
       };
       const raw = localStorage.getItem("sb_orders");
@@ -19,7 +19,7 @@ const OrderSuccess = ({ onContinueShopping }) => {
       list.unshift(order);
       localStorage.setItem("sb_orders", JSON.stringify(list));
     } catch (err) {}
-  }, []);
+  }, [displayOrderNumber]);
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white py-12">
       <div className="max-w-3xl mx-auto px-4">
@@ -36,10 +36,7 @@ const OrderSuccess = ({ onContinueShopping }) => {
           <div className="mb-8 p-4 bg-gray-50 rounded-lg inline-block">
             <div className="flex items-center gap-2 text-gray-600">
               <Package className="w-5 h-5" />
-              <span>
-                Order #: ORD-
-                {Math.random().toString(36).substr(2, 9).toUpperCase()}
-              </span>
+              <span>Order #: {displayOrderNumber}</span>
             </div>
           </div>
 

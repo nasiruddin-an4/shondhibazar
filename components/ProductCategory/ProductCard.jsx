@@ -58,7 +58,7 @@ const ProductCard = ({ product, isLoading = false }) => {
   }, []);
 
   const cartItem = cartItems.find(
-    (item) => item.productId === product.id && item.size === selectedSize
+    (item) => item.productId === product.id && item.variantId === selectedSize
   );
 
   useEffect(() => {
@@ -84,12 +84,12 @@ const ProductCard = ({ product, isLoading = false }) => {
       const defaultSize = product.sizes[0];
       return defaultSize ? defaultSize.price * quantity : null;
     }
-    const sizeOption = product.sizes.find((s) => s.size === selectedSize);
+    const sizeOption = product.sizes.find((s) => s.id === selectedSize);
     return sizeOption ? sizeOption.price * quantity : null;
   };
 
-  const handleSizeSelect = (size) => {
-    dispatch(selectSize({ productId: product.id, size }));
+  const handleSizeSelect = (sizeOption) => {
+    dispatch(selectSize({ productId: product.id, variantId: sizeOption.id }));
     setQuantity(1);
   };
 
@@ -99,12 +99,12 @@ const ProductCard = ({ product, isLoading = false }) => {
 
     if (cartItem) {
       if (newQuantity === 0) {
-        dispatch(removeFromCart({ productId: product.id, size: selectedSize }));
+        dispatch(removeFromCart({ productId: product.id, variantId: selectedSize }));
       } else {
         dispatch(
           updateCartQuantity({
             productId: product.id,
-            size: selectedSize,
+            variantId: selectedSize,
             quantity: newQuantity,
           })
         );
@@ -113,21 +113,28 @@ const ProductCard = ({ product, isLoading = false }) => {
   };
 
   const handleAddToCart = () => {
-    if (selectedSize || product.sizes[0]) {
-      const sizeToUse = selectedSize || product.sizes[0].size;
-      if (cartItem) {
-        dispatch(
-          updateCartQuantity({
-            productId: product.id,
-            size: sizeToUse,
-            quantity,
-          })
-        );
-      } else {
-        dispatch(
-          addToCart({ productId: product.id, size: sizeToUse, quantity })
-        );
-      }
+    const sizeOptionToUse = selectedSize
+      ? product.sizes.find((s) => s.id === selectedSize)
+      : product.sizes[0];
+    if (!sizeOptionToUse) return;
+
+    if (cartItem) {
+      dispatch(
+        updateCartQuantity({
+          productId: product.id,
+          variantId: sizeOptionToUse.id,
+          quantity,
+        })
+      );
+    } else {
+      dispatch(
+        addToCart({
+          productId: product.id,
+          variantId: sizeOptionToUse.id,
+          size: sizeOptionToUse.size,
+          quantity,
+        })
+      );
     }
   };
 
@@ -158,7 +165,7 @@ const ProductCard = ({ product, isLoading = false }) => {
                 -{product.discount}%
               </motion.div>
             )}
-            <Link href={`/details/${product?.id}`} className="block w-full h-full">
+            <Link href={`/details/${product?.slug || product?.id}`} className="block w-full h-full">
               <motion.img
                 src={product.image}
                 alt={product.name}
@@ -179,7 +186,7 @@ const ProductCard = ({ product, isLoading = false }) => {
 
             {/* Name */}
             <Link
-              href={`/details/${product?.id}`}
+              href={`/details/${product?.slug || product?.id}`}
               className="block text-sm font-medium mb-1 hover:text-green-500 transition-colors"
             >
               {product.name}
@@ -204,12 +211,12 @@ const ProductCard = ({ product, isLoading = false }) => {
             <div className="flex flex-wrap gap-1 mb-3">
               {product.sizes.map((sizeOption) => (
                 <motion.button
-                  key={sizeOption.size}
-                  onClick={() => handleSizeSelect(sizeOption.size)}
+                  key={sizeOption.id}
+                  onClick={() => handleSizeSelect(sizeOption)}
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className={`px-2 py-1 border rounded-md text-xs transition-all ${
-                    isClient && selectedSize === sizeOption.size
+                    isClient && selectedSize === sizeOption.id
                       ? "border-green-500 bg-green-50 text-green-600"
                       : "border-gray-300 hover:border-green-500 hover:bg-gray-50"
                   }`}

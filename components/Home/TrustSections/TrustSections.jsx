@@ -169,13 +169,14 @@ const TrustSections = () => {
   const sliderSettings = {
     dots: false,
     infinite: true,
-    speed: 500,
     slidesToShow: 5,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 3000,
-    nextArrow: <NextArrow />,
-    prevArrow: <PrevArrow />,
+    speed: 3000,
+    autoplaySpeed: 0,
+    cssEase: "linear",
+    pauseOnHover: true,
+    arrows: false,
     responsive: [
       {
         breakpoint: 1024,
@@ -258,10 +259,14 @@ const TrustSections = () => {
           >
             Brand That Trust Us
           </motion.h2>
-          <div className="max-w-6xl mx-auto">
+          <div className="max-w-6xl mx-auto relative">
+            {/* Gradient masks for smooth fade effect */}
+            <div className="absolute top-0 left-0 w-32 h-full bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
+            <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
+            
             <Slider {...sliderSettings}>
-              {brands.map((brand) => (
-                <div key={brand.id} className="px-4">
+              {[...brands, ...brands].map((brand, index) => (
+                <div key={`brand-${brand.id}-${index}`} className="px-2">
                   <div className="h-24 relative">
                     <Image
                       src={brand.src}
@@ -290,10 +295,14 @@ const TrustSections = () => {
           >
             Our Marketplaces
           </motion.h2>
-          <div className="max-w-6xl mx-auto">
+          <div className="max-w-6xl mx-auto relative">
+            {/* Gradient masks for smooth fade effect */}
+            <div className="absolute top-0 left-0 w-32 h-full bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
+            <div className="absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
+
             <Slider {...sliderSettings}>
-              {marketplaces.map((market) => (
-                <div key={market.id} className="px-4">
+              {[...marketplaces, ...marketplaces].map((market, index) => (
+                <div key={`market-${market.id}-${index}`} className="px-2">
                   <div className="h-24 relative">
                     <Image
                       src={market.src}

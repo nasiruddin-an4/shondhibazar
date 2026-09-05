@@ -71,7 +71,7 @@ const CartSummary = ({
             [...Array(2)].map((_, i) => <CartItemSkeleton key={i} />)
           : // Actual items
             cartItems.map((item) => (
-              <CartItem key={item.id} item={item} isLoading={false} />
+              <CartItem key={`${item.productId}-${item.variantId}`} item={item} isLoading={false} />
             ))}
       </div>
 

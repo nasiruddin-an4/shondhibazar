@@ -22,7 +22,7 @@ const TopNavbar = () => {
   const [hoveredItem, setHoveredItem] = useState(null);
 
   return (
-    <div className="bg-white py-4">
+    <div className="bg-white py-4 relative z-[60]">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between space-x-8">
           {/* Logo */}
