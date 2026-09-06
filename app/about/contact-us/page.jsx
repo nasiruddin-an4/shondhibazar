@@ -86,8 +86,8 @@ const ContactUs = () => {
         {/* Decorative background shapes */}
         <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-white/10 rounded-full blur-3xl pointer-events-none transform translate-x-1/2 -translate-y-1/2"></div>
         <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-teal-900/20 rounded-full blur-3xl pointer-events-none transform -translate-x-1/2 translate-y-1/2"></div>
-        
-        <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
+
+        <div className="relative z-10 containermx-auto px-6 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -136,7 +136,7 @@ const ContactUs = () => {
       <section className="max-w-7xl mx-auto px-6">
         <div className="bg-white rounded-[2.5rem] shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden">
           <div className="grid lg:grid-cols-2">
-            
+
             {/* Left side: Info */}
             <div className="p-10 md:p-16 bg-gray-50 border-b lg:border-b-0 lg:border-r border-gray-100 flex flex-col justify-center">
               <motion.div

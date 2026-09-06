@@ -195,7 +195,7 @@ export default function OurArtisanPage() {
       {/* Mission Statement */}
       <section className="py-16 bg-green-500 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="max-w-4xl mx-auto">
+          <div className="containermx-auto">
             <p className="text-xl leading-relaxed">
               Women Bangla is one among many like her, who have changed their
               lives and the lives of their families through contract farming. We

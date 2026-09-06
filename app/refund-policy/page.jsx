@@ -10,7 +10,7 @@ export default function RefundPolicyPage() {
         {/* Decorative background shapes */}
         <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-white/10 rounded-full blur-3xl pointer-events-none transform translate-x-1/2 -translate-y-1/2"></div>
         <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-teal-900/20 rounded-full blur-3xl pointer-events-none transform -translate-x-1/2 translate-y-1/2"></div>
-        
+
         <div className="relative z-10 max-w-3xl mx-auto px-6">
           <div className="w-20 h-20 bg-white/20 rounded-3xl backdrop-blur-md flex items-center justify-center mx-auto mb-8 shadow-xl border border-white/20">
             <ShieldAlert className="w-10 h-10 text-white" />
@@ -23,11 +23,11 @@ export default function RefundPolicyPage() {
       </section>
 
       {/* Policy Content */}
-      <section className="max-w-4xl mx-auto px-6 -mt-12 relative z-20">
+      <section className="containermx-auto px-6 -mt-12 relative z-20">
         <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
-          
+
           <div className="p-8 md:p-12 space-y-12">
-            
+
             {/* Eligibility */}
             <div className="space-y-4">
               <div className="flex items-center space-x-4 mb-6">

@@ -63,7 +63,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
 export const API_Query = createApi({
   reducerPath: "API_Query",
   baseQuery: baseQueryWithReauth,
-  tagTypes: ["Cart", "Wishlist", "Product", "User", "Order", "Address", "Review"],
+  tagTypes: ["Cart", "Wishlist", "Product", "User", "Order", "Address", "Review", "Return"],
   endpoints: (builder) => ({
     getCountryByName: builder.query({
       query: (name) => `location_country/?search=${name}`,

@@ -87,7 +87,7 @@ const OurStory = () => {
   const SkeletonLoader = () => (
     <div className="animate-pulse">
       <div className="h-screen bg-gray-300" />
-      <div className="max-w-4xl mx-auto py-20 px-4 space-y-12">
+      <div className="containermx-auto py-20 px-4 space-y-12">
         <div className="h-10 bg-gray-300 rounded w-3/4 mx-auto" />
         <div className="space-y-8">
           {[1, 2, 3, 4].map((i) => (
@@ -124,7 +124,7 @@ const OurStory = () => {
           priority
         />
         <div className="absolute inset-0 bg-black bg-opacity-50" />
-        <div className="z-10 max-w-4xl px-4">
+        <div className="z-10 containerpx-4">
           <motion.h1
             className="text-5xl md:text-7xl font-bold mb-6"
             initial={{ opacity: 0, y: -50 }}
@@ -236,7 +236,7 @@ const OurStory = () => {
 
       {/* Call to Action */}
       <section className="py-20 px-4 text-center bg-green-500 text-white">
-        <div className="max-w-4xl mx-auto">
+        <div className="containermx-auto">
           <motion.h2
             className="text-4xl md:text-5xl font-bold mb-6"
             {...fadeInUp}

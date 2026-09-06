@@ -34,7 +34,7 @@ export default function SafeFoodPage() {
       {/* Description Section */}
       <section className="py-24 bg-gray-50 border-t border-gray-100">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto text-center">
+          <div className="containermx-auto text-center">
             <p className="text-xl text-gray-600 leading-relaxed">
               Governments, consumers, and industry can cause health and economic
               losses. The causes are unhygienic practices in food production,

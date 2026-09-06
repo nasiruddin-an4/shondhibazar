@@ -213,6 +213,21 @@ export const ecommerceApi = API_Query.injectEndpoints({
       query: (id) => `orders/me/${id}`,
       providesTags: (result, error, id) => [{ type: "Order", id }],
     }),
+    
+    // Returns
+    getMyReturns: builder.query({
+      query: () => `returns/my`,
+      providesTags: ["Return"],
+    }),
+    createReturn: builder.mutation({
+      query: (data) => ({
+        url: `returns`,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: ["Return", "Order"],
+    }),
+    
     getAddresses: builder.query({
       query: () => `users/addresses`,
       providesTags: ["Address"],
@@ -242,6 +257,14 @@ export const ecommerceApi = API_Query.injectEndpoints({
         method: "POST",
         body: data,
       }),
+    }),
+
+    // -------------------------
+    // 10. Shipment Endpoint
+    // -------------------------
+    getShipmentByOrderId: builder.query({
+      query: (orderId) => `shipping/shipments/order/${orderId}`,
+      providesTags: (result, error, id) => [{ type: "Shipment", id }],
     }),
   }),
 });
@@ -286,10 +309,14 @@ export const {
   useUpdateUserProfileMutation,
   useGetUserOrdersQuery,
   useGetOrderByIdQuery,
+  useGetMyReturnsQuery,
+  useCreateReturnMutation,
   useGetAddressesQuery,
   useAddAddressMutation,
   // Farmers
   useGetFarmersQuery,
   // Contact
   useSendContactMessageMutation,
+  // Shipments
+  useGetShipmentByOrderIdQuery,
 } = ecommerceApi;

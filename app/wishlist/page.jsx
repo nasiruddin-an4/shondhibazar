@@ -46,11 +46,18 @@ export default function WishlistPage() {
     }
   };
 
-  const handleAddToCart = (product, size) => {
+  const handleMoveToCart = async (product, size, variantId) => {
     dispatch(
       addToCart({ productId: product.id, variantId: size.id, size: size.size, quantity: 1 })
     );
-    toast.success("Added to cart");
+    try {
+      await removeFromWishlist(variantId).unwrap();
+      toast.success("Moved to cart");
+    } catch (err) {
+      // The cart add already happened and matters more than this cleanup
+      // step — don't turn a successful "add to cart" into an error toast.
+      toast.success("Added to cart");
+    }
   };
 
   if (!isSignedIn) {
@@ -123,11 +130,12 @@ export default function WishlistPage() {
                   {size.size} — {Number(size.price).toFixed(2)}৳
                 </p>
                 <button
-                  onClick={() => handleAddToCart(product, size)}
-                  className="w-full h-9 rounded-md bg-green-500 hover:bg-green-600 text-white text-sm flex items-center justify-center gap-1.5 transition-colors"
+                  onClick={() => handleMoveToCart(product, size, variantId)}
+                  disabled={isRemoving}
+                  className="w-full h-9 rounded-md bg-green-500 hover:bg-green-600 text-white text-sm flex items-center justify-center gap-1.5 transition-colors disabled:opacity-60"
                 >
                   <ShoppingCart size={14} />
-                  Add to Cart
+                  Move to Cart
                 </button>
               </div>
             </div>

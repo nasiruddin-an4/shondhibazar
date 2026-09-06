@@ -9,7 +9,7 @@ export default function OurPackagingPage() {
       <section className="py-24 bg-gradient-to-r from-emerald-600 to-teal-600 text-white relative overflow-hidden">
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white/10 rounded-full blur-3xl pointer-events-none transform translate-x-1/2 -translate-y-1/2"></div>
         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-teal-900/20 rounded-full blur-3xl pointer-events-none transform -translate-x-1/2 translate-y-1/2"></div>
-        
+
         <div className="relative z-10 max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="order-2 lg:order-1 space-y-8">
@@ -109,7 +109,7 @@ export default function OurPackagingPage() {
                 </p>
               </div>
             </div>
-            
+
             <div className="order-1 lg:order-2">
               <div className="relative rounded-[3rem] overflow-hidden shadow-2xl">
                 <img
@@ -125,7 +125,7 @@ export default function OurPackagingPage() {
           <div className="bg-gray-900 text-white p-12 md:p-16 rounded-[3rem] relative shadow-2xl overflow-hidden">
             <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-emerald-500/20 rounded-full blur-3xl pointer-events-none transform translate-x-1/3 -translate-y-1/3"></div>
             <Quote className="absolute top-12 left-12 w-20 h-20 text-white/10" />
-            <div className="relative z-10 max-w-4xl mx-auto text-center">
+            <div className="relative z-10 containermx-auto text-center">
               <p className="text-2xl md:text-3xl font-medium leading-relaxed italic text-emerald-50">
                 "These healthy options come to the forefront. Truly, each such glass is slightly individual, might be different from all types as they are absolutely handmade masterpieces."
               </p>
@@ -138,14 +138,14 @@ export default function OurPackagingPage() {
       <section className="py-24 max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div className="relative order-2 lg:order-1">
-             <div className="absolute -inset-4 bg-emerald-100 rounded-[3rem] transform rotate-3 transition-transform hover:rotate-0 duration-500"></div>
-             <img
+            <div className="absolute -inset-4 bg-emerald-100 rounded-[3rem] transform rotate-3 transition-transform hover:rotate-0 duration-500"></div>
+            <img
               src="https://shondhibazar.com/wp-content/uploads/2022/08/recycle-bottle-of-shondhibazar-opt.jpg"
               alt="Recycling"
               className="relative rounded-[2.5rem] shadow-xl w-full h-auto object-cover border-4 border-white"
             />
           </div>
-          
+
           <div className="order-1 lg:order-2">
             <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mb-6 shadow-sm">
               <Recycle className="w-8 h-8" />

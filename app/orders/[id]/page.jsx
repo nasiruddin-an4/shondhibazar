@@ -6,7 +6,7 @@ import { motion } from "motion/react";
 import Link from "next/link";
 import Loader from "@/components/Checkout/Loader";
 import AuthModal from "@/components/Auth/AuthModal";
-import { useGetOrderByIdQuery } from "@/redux/API_Query/ecommerceApi";
+import { useGetOrderByIdQuery, useGetShipmentByOrderIdQuery } from "@/redux/API_Query/ecommerceApi";
 import {
   Lock,
   Check,
@@ -75,6 +75,56 @@ function TrackingTimeline({ status }) {
           </div>
         );
       })}
+    </div>
+  );
+}
+
+function ShipmentDetails({ order }) {
+  const { data: shipment, isLoading } = useGetShipmentByOrderIdQuery(order.id, {
+    skip: !["PROCESSING", "SHIPPED", "DELIVERED", "RETURNED"].includes(order.status)
+  });
+
+  if (!shipment || isLoading) return null;
+
+  return (
+    <div className="mt-6 pt-6 border-t border-gray-100">
+      <h4 className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-4">Courier Update</h4>
+      
+      <div className="bg-gray-50 rounded-xl p-4 mb-4 flex items-center justify-between">
+        <div>
+          <p className="text-xs text-gray-500">Courier</p>
+          <p className="font-semibold text-gray-900">{shipment.courier_name}</p>
+        </div>
+        <div className="text-right">
+          <p className="text-xs text-gray-500">Tracking Number</p>
+          <p className="font-semibold text-gray-900">{shipment.tracking_number || "N/A"}</p>
+        </div>
+      </div>
+      
+      {shipment.tracking_url && (
+        <a 
+          href={shipment.tracking_url} 
+          target="_blank" 
+          rel="noreferrer" 
+          className="text-emerald-600 font-medium text-sm hover:underline block mb-6"
+        >
+          View on courier website →
+        </a>
+      )}
+
+      {shipment.events?.length > 0 && (
+        <div className="space-y-4 max-h-60 overflow-y-auto pr-2">
+          {shipment.events.map((ev, idx) => (
+            <div key={ev.id} className="relative pl-4 border-l-2 border-emerald-100 pb-2 last:border-0 last:pb-0">
+              <div className="absolute w-2.5 h-2.5 bg-emerald-500 rounded-full -left-[6px] top-1.5 ring-4 ring-white" />
+              <p className="font-bold text-sm text-gray-900">{ev.status}</p>
+              {ev.description && <p className="text-sm text-gray-500 mt-1">{ev.description}</p>}
+              {ev.location && <p className="text-xs text-gray-400 mt-1 flex items-center gap-1"><MapPin className="w-3 h-3" /> {ev.location}</p>}
+              <p className="text-xs text-gray-400 mt-1">{new Date(ev.timestamp).toLocaleString()}</p>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -162,6 +212,7 @@ export default function OrderDetails({ params }) {
 
             <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide mb-2">Tracking</h3>
             <TrackingTimeline status={order.status} />
+            <ShipmentDetails order={order} />
           </div>
 
           {/* Items */}
@@ -183,6 +234,16 @@ export default function OrderDetails({ params }) {
                 </div>
               ))}
             </div>
+            {(order.status === "DELIVERED" || order.status === "SHIPPED") && (
+              <div className="mt-6 pt-6 border-t border-gray-100 flex justify-end">
+                <Link 
+                  href={`/orders/${order.id}/return`}
+                  className="px-6 py-2.5 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors"
+                >
+                  Request Return
+                </Link>
+              </div>
+            )}
           </div>
 
           {/* Shipping address */}

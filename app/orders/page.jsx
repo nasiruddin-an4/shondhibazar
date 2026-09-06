@@ -113,7 +113,7 @@ export default function OrdersPage() {
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-emerald-100/50 rounded-full blur-3xl pointer-events-none transform translate-x-1/3 -translate-y-1/3" />
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-teal-100/50 rounded-full blur-3xl pointer-events-none transform -translate-x-1/3 translate-y-1/3" />
 
-      <div className="max-w-4xl mx-auto px-4 relative z-10">
+      <div className="containermx-auto px-4 relative z-10">
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-12">
           <div className="inline-flex items-center justify-center p-4 bg-emerald-100 rounded-full mb-4 text-emerald-600">
             <Package className="w-8 h-8" />

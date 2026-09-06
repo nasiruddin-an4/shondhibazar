@@ -38,8 +38,8 @@ export default function JesminAkhtarNeelaPage() {
       <section className="py-24 bg-gradient-to-r from-emerald-600 to-teal-600 text-white relative overflow-hidden">
         <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-white/10 rounded-full blur-3xl pointer-events-none transform translate-x-1/2 -translate-y-1/2"></div>
         <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-teal-900/20 rounded-full blur-3xl pointer-events-none transform -translate-x-1/2 translate-y-1/2"></div>
-        
-        <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
+
+        <div className="relative z-10 containermx-auto px-6 text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 tracking-tight">Meet Jesmin Akhtar Neela</h1>
           <p className="text-xl text-emerald-50 leading-relaxed max-w-2xl mx-auto">
             Visionary social entrepreneur, mother, and advocate for safe food and women's economic empowerment in Bangladesh.
@@ -108,7 +108,7 @@ export default function JesminAkhtarNeelaPage() {
                 <p className="text-gray-500 mt-1 font-medium">Metrics and recognitions of impact.</p>
               </div>
             </div>
-            
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 mb-12">
               {/* Left Column: Metrics */}
               <div>
@@ -189,7 +189,7 @@ export default function JesminAkhtarNeelaPage() {
 
           <div className="bg-white p-10 md:p-16 rounded-[3rem] shadow-xl border border-gray-100 mb-16 relative">
             <Quote className="absolute top-10 left-10 w-16 h-16 text-emerald-50 opacity-50" />
-            <p className="text-2xl md:text-3xl text-gray-800 leading-relaxed text-center font-medium relative z-10 max-w-4xl mx-auto">
+            <p className="text-2xl md:text-3xl text-gray-800 leading-relaxed text-center font-medium relative z-10 containermx-auto">
               "Food should heal, not harm. Mothers should never fear the food on
               their child's plate. Women can lead impactful, community-rooted
               change. Farmers deserve fairness and visibility. Sustainability is

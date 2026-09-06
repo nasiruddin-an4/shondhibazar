@@ -87,8 +87,8 @@ export default function FAQPage() {
         {/* Decorative background shapes */}
         <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-white/10 rounded-full blur-3xl pointer-events-none transform translate-x-1/2 -translate-y-1/2"></div>
         <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-teal-900/20 rounded-full blur-3xl pointer-events-none transform -translate-x-1/2 translate-y-1/2"></div>
-        
-        <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
+
+        <div className="relative z-10 containermx-auto px-6 text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 tracking-tight">How can we help you?</h1>
           <p className="text-xl text-emerald-50 leading-relaxed max-w-2xl mx-auto">
             Browse our most frequently asked questions below or reach out to us directly if you can't find what you're looking for.
@@ -99,9 +99,9 @@ export default function FAQPage() {
       {/* FAQ & Contact Content */}
       <section className="max-w-7xl mx-auto px-6 -mt-12 relative z-20 pb-24">
         <div className="bg-white rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden">
-          
+
           <div className="grid grid-cols-1 lg:grid-cols-2">
-            
+
             {/* FAQ List */}
             <div className="p-8 md:p-12 lg:border-r border-gray-100 bg-white">
               <h2 className="text-3xl font-bold text-gray-900 mb-8 tracking-tight">

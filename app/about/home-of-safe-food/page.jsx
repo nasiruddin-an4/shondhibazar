@@ -127,7 +127,7 @@ export default function FreshHarvestRedesign() {
           </div>
         </div>
 
-        <div 
+        <div
           className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center gap-2 text-white/50 cursor-pointer"
           onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
         >
@@ -237,7 +237,7 @@ export default function FreshHarvestRedesign() {
             <h2 className="text-5xl md:text-6xl font-black mb-6 tracking-tight">
               Why Choose <span className="text-emerald-400">Shondhibazar</span>
             </h2>
-            <p className="text-xl md:text-2xl text-gray-400 max-w-4xl mx-auto leading-relaxed">
+            <p className="text-xl md:text-2xl text-gray-400 containermx-auto leading-relaxed">
               We've reimagined every aspect of the food supply chain for
               unmatched quality and sustainability.
             </p>
@@ -325,7 +325,7 @@ export default function FreshHarvestRedesign() {
         <div className="absolute inset-0 bg-[url('https://shondhibazar.com/wp-content/uploads/2025/05/Award-Winning-Moments-499x374.jpg')] opacity-20 bg-cover bg-center mix-blend-overlay"></div>
         <div className="relative z-10 max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-20 items-center">
-            
+
             <div>
               <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-800/80 backdrop-blur-md rounded-full mb-8 border border-emerald-700">
                 <Users className="w-5 h-5 text-emerald-300" />
@@ -377,7 +377,7 @@ export default function FreshHarvestRedesign() {
                 </p>
               </div>
             </div>
-            
+
           </div>
         </div>
       </section>
@@ -393,7 +393,7 @@ export default function FreshHarvestRedesign() {
           </div>
 
           <div className="grid lg:grid-cols-2 gap-20 items-center">
-            
+
             <div className="relative">
               <div className="absolute inset-0 bg-emerald-100 rounded-[4rem] transform -rotate-3 scale-105"></div>
               <div className="relative bg-white rounded-[3rem] p-12 shadow-xl border border-gray-100 text-center">
@@ -433,7 +433,7 @@ export default function FreshHarvestRedesign() {
           </div>
         </div>
       </section>
-      
+
       <div className="pb-12">
         <TrustSections />
       </div>
