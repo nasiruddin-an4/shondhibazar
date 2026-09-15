@@ -39,6 +39,7 @@ const initialState = {
   products: [],
   cart: [],
   selectedSize: {},
+  coupon: null,
   loading: false,
   error: null
 };
@@ -102,6 +103,13 @@ const productSlice = createSlice({
     clearCart: (state) => {
       state.cart = [];
       state.selectedSize = {};
+      state.coupon = null;
+    },
+    setCoupon: (state, action) => {
+      state.coupon = action.payload;
+    },
+    clearCoupon: (state) => {
+      state.coupon = null;
     }
   },
   extraReducers: (builder) => {
@@ -127,7 +135,9 @@ export const {
   updateCartQuantity,
   removeFromCart,
   setCartServerId,
-  clearCart
+  clearCart,
+  setCoupon,
+  clearCoupon
 } = productSlice.actions;
 
 export default productSlice.reducer;

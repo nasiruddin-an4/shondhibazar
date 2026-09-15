@@ -29,7 +29,7 @@ import CheckoutPhoneOTP from "./CheckoutPhoneOTP";
 
 import { clearCart } from "@/redux/API_Slices/productSlice";
 import { extractErrorMessage } from "@/lib/extractErrorMessage";
-import { calculateShipping, calculateSubtotal } from "@/lib/checkoutUtils";
+import { calculateShipping, calculateSubtotal, calculateDiscount } from "@/lib/checkoutUtils";
 import {
   usePlaceOrderMutation,
   useInitSSLCommerzPaymentMutation,
@@ -63,11 +63,13 @@ const Checkout = () => {
   const [verifiedPhone, setVerifiedPhone] = useState(null);
 
   const cartItems = useSelector((state) => state.products.cart);
+  const coupon = useSelector((state) => state.products.coupon);
   const user = useSelector((state) => state.auth?.user);
   const userId = user?.id;
   const subtotal = calculateSubtotal(cartItems);
   const shipping = calculateShipping(subtotal);
-  const total = subtotal + shipping;
+  const discount = calculateDiscount(coupon, subtotal);
+  const total = subtotal + shipping - discount;
 
   useEffect(() => {
     // Simulate initial loading
@@ -146,6 +148,8 @@ const Checkout = () => {
       user_id: userId || undefined,
       subtotal,
       shipping_fee: shipping,
+      discount,
+      coupon_code: coupon?.code || undefined,
       total,
       items: cartItems.map((item) => ({
         product_variant_id: item.variantId,
@@ -188,7 +192,7 @@ const Checkout = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-12">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pt-24 sm:pt-12 pb-12">
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <div className="max-w-3xl mx-auto mb-12">
@@ -258,24 +262,6 @@ const Checkout = () => {
                 />
               )}
             </div>
-
-            {/* Trust Badges */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {[
-                { Icon: Shield, label: "Secure Payment" },
-                { Icon: Truck, label: "Free Delivery Over ৳1000" },
-                { Icon: Clock, label: "Fast Shipping" },
-                { Icon: Package, label: "Easy Returns" },
-              ].map(({ Icon, label }, index) => (
-                <div
-                  key={index}
-                  className="bg-white rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-shadow"
-                >
-                  <Icon className="w-6 h-6 mx-auto mb-2 text-green-500" />
-                  <span className="text-sm text-gray-600">{label}</span>
-                </div>
-              ))}
-            </div>
           </div>
 
           {/* Order Summary */}
@@ -286,10 +272,29 @@ const Checkout = () => {
               shipping={shipping}
               total={total}
               isLoading={isLoading}
-              step={step}
-              onContinue={() => setStep(2)}
             />
           </div>
+        </div>
+
+        {/* Trust Badges — a full-width strip below the form + summary, not
+            sandwiched between them (it used to sit inside the form column,
+            which on mobile pushed it between the shipping form and the order
+            summary/CTA). */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+          {[
+            { Icon: Shield, label: "Secure Payment" },
+            { Icon: Truck, label: "Free Delivery Over ৳1000" },
+            { Icon: Clock, label: "Fast Shipping" },
+            { Icon: Package, label: "Easy Returns" },
+          ].map(({ Icon, label }, index) => (
+            <div
+              key={index}
+              className="bg-white rounded-lg p-4 text-center shadow-sm hover:shadow-md transition-shadow"
+            >
+              <Icon className="w-6 h-6 mx-auto mb-2 text-green-500" />
+              <span className="text-sm text-gray-600">{label}</span>
+            </div>
+          ))}
         </div>
       </div>
     </div>

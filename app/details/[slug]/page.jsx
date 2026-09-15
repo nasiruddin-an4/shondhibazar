@@ -612,7 +612,7 @@ const ProductDetails = ({ params }) => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {relatedLoading
             ? Array.from({ length: 4 }).map((_, index) => (
-                <ProductCard key={index} product={{ sizes: [] }} isLoading />
+                <ProductCard key={index} product={{ sizes: [] }} isLoading index={index} />
               ))
             : relatedProducts.map((item, index) => (
                 <motion.div
@@ -621,7 +621,7 @@ const ProductDetails = ({ params }) => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                 >
-                  <ProductCard product={item} />
+                  <ProductCard product={item} index={index} />
                 </motion.div>
               ))}
         </div>

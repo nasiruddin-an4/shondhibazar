@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useMemo } from "react";
-import { ChevronLeft, ChevronRight, X, PackageSearch, SlidersHorizontal } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronDown, ArrowUpDown, X, PackageSearch, SlidersHorizontal } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "motion/react";
@@ -148,103 +148,110 @@ function ProductGridContent() {
   const isLoading = productsLoading || categoriesLoading;
   const showSkeletons = isLoading || isFetching;
 
-  const renderPaginationControls = () => {
-    // Determine the display range for "Showing X–Y of Z"
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = Math.min(startIndex + products.length, totalProducts);
+  // Results count + sort — a single compact row on every screen size, instead
+  // of a "Showing X–Y of Z" line that pushed sort/pagination onto a second row
+  // and ate vertical space on mobile.
+  const renderResultsAndSort = () => (
+    <div className="flex items-center justify-between gap-3 w-full">
+      <p className="text-sm text-gray-600">
+        <span className="font-medium text-gray-800">{totalProducts}</span> results
+      </p>
+      <div className="relative shrink-0">
+        <ArrowUpDown className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+        <select
+          value={sortBy}
+          onChange={(e) => handleSort(e.target.value)}
+          className="appearance-none pl-8 pr-7 py-1.5 rounded-full border border-gray-200 bg-white text-sm text-gray-700 hover:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 transition-colors"
+        >
+          <option value="default">Default sorting</option>
+          <option value="price_asc">Price: low to high</option>
+          <option value="price_desc">Price: high to low</option>
+          <option value="name_asc">Name: A to Z</option>
+          <option value="name_desc">Name: Z to A</option>
+        </select>
+        <ChevronDown className="w-3.5 h-3.5 text-gray-400 absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+      </div>
+    </div>
+  );
+
+  // Page navigation — kept separate from results/sort so it can be reused at
+  // the bottom of the grid (the primary way to move pages once you've scrolled
+  // past the top bar) without repeating the sort control there too.
+  const renderPager = () => {
+    if (totalPages <= 1) return null;
     const pageList = getPageList(currentPage, totalPages);
 
     return (
-      <div className="flex flex-col sm:flex-row justify-between items-center gap-4 w-full">
-        <p className="text-sm text-gray-600">
-          Showing <span className="font-medium text-gray-800">{totalProducts === 0 ? 0 : startIndex + 1}–{endIndex}</span> of <span className="font-medium text-gray-800">{totalProducts}</span> results
-        </p>
-        <div className="flex items-center gap-3">
-          <select
-            value={sortBy}
-            onChange={(e) => handleSort(e.target.value)}
-            className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm bg-white hover:border-green-500 focus:outline-none focus:ring-1 focus:ring-green-500 transition-colors"
-          >
-            <option value="default">Default sorting</option>
-            <option value="price_asc">Price: low to high</option>
-            <option value="price_desc">Price: high to low</option>
-            <option value="name_asc">Name: A to Z</option>
-            <option value="name_desc">Name: Z to A</option>
-          </select>
+      <nav aria-label="Pagination" className="flex items-center justify-center gap-1">
+        <button
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          aria-label="Previous page"
+          className="h-9 w-9 sm:h-8 sm:w-8 flex items-center justify-center rounded-full border border-gray-200 hover:bg-gray-50 hover:border-gray-300 disabled:opacity-40 disabled:hover:bg-transparent transition-colors"
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </button>
 
-          {totalPages > 1 && (
-            <nav aria-label="Pagination" className="flex items-center gap-1">
-              <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                aria-label="Previous page"
-                className="h-8 w-8 flex items-center justify-center rounded-full border border-gray-200 hover:bg-gray-50 hover:border-gray-300 disabled:opacity-40 disabled:hover:bg-transparent transition-colors"
+        {/* Compact indicator for narrow screens */}
+        <span className="sm:hidden px-2 text-sm text-gray-600 font-medium whitespace-nowrap">
+          {currentPage} / {totalPages}
+        </span>
+
+        {/* Full windowed page list */}
+        <div className="hidden sm:flex items-center gap-1">
+          {pageList.map((page, i) =>
+            page === "…" ? (
+              <span
+                key={`gap-${i}`}
+                className="w-8 h-8 flex items-center justify-center text-sm text-gray-400 select-none"
               >
-                <ChevronLeft className="w-4 h-4" />
-              </button>
-
-              {/* Compact indicator for narrow screens */}
-              <span className="sm:hidden px-2 text-sm text-gray-600 font-medium whitespace-nowrap">
-                {currentPage} / {totalPages}
+                …
               </span>
-
-              {/* Full windowed page list */}
-              <div className="hidden sm:flex items-center gap-1">
-                {pageList.map((page, i) =>
-                  page === "…" ? (
-                    <span
-                      key={`gap-${i}`}
-                      className="w-8 h-8 flex items-center justify-center text-sm text-gray-400 select-none"
-                    >
-                      …
-                    </span>
-                  ) : (
-                    <button
-                      key={page}
-                      onClick={() => handlePageChange(page)}
-                      aria-current={page === currentPage ? "page" : undefined}
-                      className={`w-8 h-8 flex items-center justify-center rounded-full text-sm font-medium transition-colors ${
-                        page === currentPage
-                          ? "bg-green-500 text-white shadow-sm"
-                          : "text-gray-600 hover:bg-gray-100"
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  )
-                )}
-              </div>
-
+            ) : (
               <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                aria-label="Next page"
-                className="h-8 w-8 flex items-center justify-center rounded-full border border-gray-200 hover:bg-gray-50 hover:border-gray-300 disabled:opacity-40 disabled:hover:bg-transparent transition-colors"
+                key={page}
+                onClick={() => handlePageChange(page)}
+                aria-current={page === currentPage ? "page" : undefined}
+                className={`w-8 h-8 flex items-center justify-center rounded-full text-sm font-medium transition-colors ${
+                  page === currentPage
+                    ? "bg-green-500 text-white shadow-sm"
+                    : "text-gray-600 hover:bg-gray-100"
+                }`}
               >
-                <ChevronRight className="w-4 h-4" />
+                {page}
               </button>
-            </nav>
+            )
           )}
         </div>
-      </div>
+
+        <button
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          aria-label="Next page"
+          className="h-9 w-9 sm:h-8 sm:w-8 flex items-center justify-center rounded-full border border-gray-200 hover:bg-gray-50 hover:border-gray-300 disabled:opacity-40 disabled:hover:bg-transparent transition-colors"
+        >
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </nav>
     );
   };
 
   const renderLoadingCards = () => (
     <>
       {Array.from({ length: itemsPerPage }).map((_, i) => (
-        <ProductCard key={`skeleton-${i}`} isLoading={true} />
+        <ProductCard key={`skeleton-${i}`} isLoading={true} index={i} />
       ))}
     </>
   );
 
   const renderProductCards = () => (
     <>
-      {products.map((product) => (
+      {products.map((product, index) => (
         <ProductCard
           key={`product-${product.id}`}
           product={product}
           isLoading={false}
+          index={index}
         />
       ))}
     </>
@@ -262,8 +269,9 @@ function ProductGridContent() {
   );
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <nav className="flex items-center gap-1.5 mb-8 text-sm text-gray-500">
+    <div className="min-h-screen bg-gray-50">
+    <div className="container mx-auto px-4 py-4 sm:py-8">
+      <nav className="hidden sm:flex items-center gap-1.5 mb-8 text-sm text-gray-500">
         <Link href="/" className="hover:text-green-600 transition-colors">
           Home
         </Link>
@@ -419,10 +427,10 @@ function ProductGridContent() {
         </aside>
 
         <main className="flex-1 min-w-0">
-          <div className="mb-6">
-            <div className="flex flex-col gap-4">
+          <div className="mb-4 sm:mb-6">
+            <div className="flex flex-col gap-3 sm:gap-4">
               <div className="flex justify-between items-center gap-4">
-                <h1 className="text-2xl font-bold text-gray-800">
+                <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
                   {expandedCategory && expandedCategory !== "All Products" ? expandedCategory : "All Products"}
                 </h1>
                 {/* Mobile Sidebar Toggle Button */}
@@ -434,13 +442,18 @@ function ProductGridContent() {
                   <span className="text-sm">Filters</span>
                 </button>
               </div>
-              <div className="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3">
-                {renderPaginationControls()}
+              <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-3 sm:px-4 sm:py-3">
+                {renderResultsAndSort()}
+                {totalPages > 1 && (
+                  <div className="hidden sm:flex justify-end mt-3 pt-3 border-t border-gray-100">
+                    {renderPager()}
+                  </div>
+                )}
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-6">
             {showSkeletons ? renderLoadingCards() : renderProductCards()}
           </div>
 
@@ -460,13 +473,14 @@ function ProductGridContent() {
             </div>
           )}
 
-          {(products.length > 0 || showSkeletons) && (
-            <div className="mt-10 bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3">
-              {renderPaginationControls()}
+          {(products.length > 0 || showSkeletons) && totalPages > 1 && (
+            <div className="mt-8 sm:mt-10 bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3">
+              {renderPager()}
             </div>
           )}
         </main>
       </div>
+    </div>
     </div>
   );
 }

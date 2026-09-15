@@ -1,14 +1,29 @@
 // components/layout/MobileFooter.js
 "use client";
 import Link from "next/link";
-import { Search, Home, ShoppingCart, User } from "lucide-react";
+import { LayoutGrid, Home, ShoppingCart, User } from "lucide-react";
 import { motion } from "motion/react";
+import { useSelector } from "react-redux";
+
+const CartIcon = ({ count }) => (
+  <div className="relative">
+    <ShoppingCart size={20} />
+    {count > 0 && (
+      <span className="absolute -top-1.5 -right-2 inline-flex items-center justify-center px-1 min-w-[16px] h-4 text-[10px] font-bold leading-none text-white bg-green-600 rounded-full">
+        {count}
+      </span>
+    )}
+  </div>
+);
 
 const MobileFooter = () => {
+  const cart = useSelector((state) => state.products.cart);
+  const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
+
   const footerItems = [
-    { icon: <Search size={20} />, label: "Search", href: "/product-category" },
     { icon: <Home size={20} />, label: "Home", href: "/" },
-    { icon: <ShoppingCart size={20} />, label: "Cart", action: "cart" },
+    { icon: <LayoutGrid size={20} />, label: "Products", href: "/product-category" },
+    { icon: <CartIcon count={cartCount} />, label: "Cart", action: "cart" },
     { icon: <User size={20} />, label: "Account", href: "/profile" },
   ];
 

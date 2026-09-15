@@ -12,11 +12,22 @@ import { NumberCounter } from "@/lib/NumberCounter";
 import WishlistButton from "@/components/Wishlist/WishlistButton";
 import Link from "next/link";
 
-const ProductCardSkeleton = () => (
-  <div className="h-full bg-white rounded-2xl overflow-hidden border border-gray-100 flex flex-col">
-    <div className="relative aspect-[4/3] bg-gray-200 animate-pulse" />
-    <div className="p-4 flex flex-col flex-grow space-y-3">
-      <div className="h-4 w-16 bg-gray-200 rounded-full animate-pulse" />
+// Soft pastel backdrops behind the product photo on mobile, cycled by grid
+// position — desktop keeps the plain studio-grey backdrop.
+const MOBILE_PASTELS = [
+  "bg-[#f2ecd9]",
+  "bg-[#dcebf5]",
+  "bg-[#e6e1f5]",
+  "bg-[#e8ece2]",
+  "bg-[#f5e3e6]",
+  "bg-[#f5ead9]",
+];
+
+const ProductCardSkeleton = ({ index = 0 }) => (
+  <div className="h-full bg-white rounded-3xl sm:rounded-2xl overflow-hidden sm:border sm:border-gray-100 flex flex-col">
+    <div className={`relative aspect-square sm:aspect-[4/3] rounded-3xl sm:rounded-none animate-pulse ${MOBILE_PASTELS[index % MOBILE_PASTELS.length]} sm:bg-gray-200`} />
+    <div className="p-2.5 sm:p-4 flex flex-col flex-grow space-y-2 sm:space-y-3">
+      <div className="hidden sm:block h-4 w-16 bg-gray-200 rounded-full animate-pulse" />
       <div className="space-y-2">
         <div className="h-4 w-3/4 bg-gray-200 rounded animate-pulse" />
         <div className="h-4 w-1/2 bg-gray-200 rounded animate-pulse" />
@@ -30,15 +41,15 @@ const ProductCardSkeleton = () => (
           />
         ))}
       </div>
-      <div className="mt-auto h-10 w-full bg-gray-200 rounded-lg animate-pulse" />
+      <div className="mt-auto h-10 w-full bg-gray-200 rounded-full sm:rounded-lg animate-pulse" />
     </div>
   </div>
 );
 
-const ProductCard = ({ product, isLoading = false }) => {
+const ProductCard = ({ product, isLoading = false, index = 0 }) => {
   // Return skeleton loader if loading or no product
   if (isLoading || !product) {
-    return <ProductCardSkeleton />;
+    return <ProductCardSkeleton index={index} />;
   }
 
   const dispatch = useDispatch();
@@ -167,7 +178,7 @@ const ProductCard = ({ product, isLoading = false }) => {
   return (
     <div>
       <motion.div
-        className="h-full bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-gray-200 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300"
+        className="h-full bg-white rounded-3xl sm:rounded-2xl overflow-hidden border border-transparent sm:border-gray-100 sm:hover:border-gray-200 sm:hover:shadow-lg sm:hover:-translate-y-0.5 transition-all duration-300"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
@@ -177,7 +188,9 @@ const ProductCard = ({ product, isLoading = false }) => {
       >
         <div className="flex flex-col h-full">
           {/* Product Image */}
-          <div className="relative aspect-[4/3] overflow-hidden bg-[#faf9f7]">
+          <div
+            className={`relative aspect-square sm:aspect-[4/3] overflow-hidden rounded-3xl sm:rounded-none ${MOBILE_PASTELS[index % MOBILE_PASTELS.length]} sm:bg-[#faf9f7]`}
+          >
             {product.discount && (
               <motion.div
                 initial={{ x: -100 }}
@@ -204,9 +217,9 @@ const ProductCard = ({ product, isLoading = false }) => {
             </Link>
           </div>
 
-          <div className="p-4 flex flex-col flex-grow">
-            {/* Categories */}
-            <div className="flex flex-wrap gap-1 mb-1.5">
+          <div className="p-2.5 sm:p-4 flex flex-col flex-grow">
+            {/* Categories — hidden on mobile to match the simplified card */}
+            <div className="hidden sm:flex flex-wrap gap-1 mb-1.5">
               <span className="text-[11px] font-medium text-green-700 bg-green-50 px-2 py-0.5 rounded-full">
                 {product.category}
               </span>
@@ -215,15 +228,16 @@ const ProductCard = ({ product, isLoading = false }) => {
             {/* Name */}
             <Link
               href={`/details/${product?.slug || product?.id}`}
-              className="block text-sm font-semibold text-gray-800 mb-0.5 line-clamp-2 min-h-[2.5rem] hover:text-green-600 transition-colors"
+              className="block text-xs sm:text-sm font-semibold text-gray-800 mb-0.5 line-clamp-2 min-h-[2rem] sm:min-h-[2.5rem] hover:text-green-600 transition-colors"
             >
               {product.name}
             </Link>
 
-            {/* Price Range */}
-            <div className="mb-1.5">
+            {/* Price Range + mobile quick-add control (a compact circular button
+                instead of the full-width bar desktop uses) */}
+            <div className="mb-1.5 flex items-center justify-between gap-2">
               <motion.span
-                className="text-green-600 text-base font-bold"
+                className="text-green-600 text-sm sm:text-base font-bold"
                 animate={{ scale: showPrice ? 1.1 : 1 }}
                 transition={{ duration: 0.2 }}
               >
@@ -233,6 +247,45 @@ const ProductCard = ({ product, isLoading = false }) => {
                       2
                     )}৳ - ${product.price.max.toFixed(2)}৳`}
               </motion.span>
+
+              <div className="sm:hidden shrink-0">
+                {isInCart ? (
+                  <div className="flex items-center gap-1 bg-green-50 rounded-full px-1 py-1">
+                    <button
+                      onClick={() => handleQuantityChange(-1)}
+                      className="w-6 h-6 flex items-center justify-center text-green-700"
+                      aria-label="Decrease quantity"
+                    >
+                      <Minus size={13} />
+                    </button>
+                    <span className="text-xs font-bold text-green-800 w-4 text-center">
+                      {quantity}
+                    </span>
+                    <button
+                      onClick={() => handleQuantityChange(1)}
+                      className="w-6 h-6 flex items-center justify-center text-green-700"
+                      aria-label="Increase quantity"
+                    >
+                      <Plus size={13} />
+                    </button>
+                  </div>
+                ) : (
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleAddToCart}
+                    disabled={!(isClient && selectedSize)}
+                    aria-label="Add to cart"
+                    className={`w-9 h-9 rounded-full flex items-center justify-center shadow-sm transition-colors ${
+                      isClient && selectedSize
+                        ? "bg-green-500 hover:bg-green-600 text-white"
+                        : "bg-gray-200 text-gray-400 cursor-not-allowed shadow-none"
+                    }`}
+                  >
+                    <Plus size={18} />
+                  </motion.button>
+                )}
+              </div>
             </div>
 
             {/* Size Options — reserve the row's height even when there's nothing to pick,
@@ -256,11 +309,12 @@ const ProductCard = ({ product, isLoading = false }) => {
                 ))}
             </div>
 
-            {/* Add to Cart Controls */}
-            <div className="mt-auto">
+            {/* Add to Cart Controls (desktop) — mobile uses the compact circular
+                button/stepper next to the price instead */}
+            <div className="hidden sm:block sm:mt-auto">
               {isInCart ? (
                 <div className="flex h-10 gap-2">
-                  <div className="flex w-20 space-x-1 border border-gray-300 rounded-lg px-1">
+                  <div className="flex w-20 space-x-1 border border-gray-300 rounded-full sm:rounded-lg px-1">
                     <button
                       onClick={() => handleQuantityChange(-1)}
                       className="w-8 flex items-center justify-center text-gray-700 hover:text-green-600 transition-colors"
@@ -281,7 +335,7 @@ const ProductCard = ({ product, isLoading = false }) => {
                     whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.99 }}
                     onClick={() => handleQuantityChange(1)}
-                    className="flex-1 rounded-lg bg-green-500 hover:bg-green-600 text-white flex items-center justify-center gap-1 text-sm font-medium shadow-sm"
+                    className="flex-1 rounded-full sm:rounded-lg bg-green-100 sm:bg-green-500 hover:bg-green-200 sm:hover:bg-green-600 text-green-800 sm:text-white flex items-center justify-center gap-1 text-xs sm:text-sm font-bold sm:font-medium uppercase sm:normal-case tracking-wide sm:tracking-normal shadow-none sm:shadow-sm"
                   >
                     <ShoppingCart size={16} />
                     <AnimatePresence mode="wait">
@@ -309,10 +363,10 @@ const ProductCard = ({ product, isLoading = false }) => {
                   whileTap={{ scale: 0.98 }}
                   onClick={handleAddToCart}
                   disabled={!(isClient && selectedSize)}
-                  className={`w-full h-10 rounded-lg text-sm font-medium shadow-sm ${
+                  className={`w-full h-10 rounded-full sm:rounded-lg text-xs sm:text-sm font-bold sm:font-medium uppercase sm:normal-case tracking-wide sm:tracking-normal shadow-none sm:shadow-sm ${
                     isClient && selectedSize
-                      ? "bg-green-500 hover:bg-green-600 text-white"
-                      : "bg-gray-100 text-gray-400 cursor-not-allowed shadow-none"
+                      ? "bg-green-100 sm:bg-green-500 hover:bg-green-200 sm:hover:bg-green-600 text-green-800 sm:text-white"
+                      : "bg-gray-100 text-gray-400 cursor-not-allowed"
                   } flex items-center justify-center gap-1 transition-all`}
                 >
                   <ShoppingCart size={16} />
