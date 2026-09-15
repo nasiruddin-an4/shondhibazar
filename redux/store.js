@@ -1,16 +1,15 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query";
+import { persistStore, persistReducer } from "redux-persist";
+import createWebStorage from "redux-persist/lib/storage/createWebStorage";
+
 import { API_Query } from "./API_Query/APIQuery";
 import AuthSlice from "./API_Slices/AuthSlice";
 import productReducer from "./API_Slices/productSlice";
-import commonSlice from "./API_Slices/commonSlice";
+import uiReducer from "./API_Slices/uiSlice";
 import userSlice from "./API_Slices/userSlice";
 import { cartSyncMiddleware } from "./cartSyncMiddleware";
-
-// Import required redux-persist dependencies
-import { persistStore, persistReducer } from "redux-persist";
-import createWebStorage from "redux-persist/lib/storage/createWebStorage";
-import { combineReducers } from "@reduxjs/toolkit";
+import { rtkErrorMiddleware } from "./rtkErrorMiddleware";
 
 // SSR-safe storage: noop on server, localStorage on client
 const createNoopStorage = () => ({
@@ -28,13 +27,13 @@ const storage =
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["auth", "commonSlice", "products"], // Add reducers you want to persist
+  whitelist: ["auth", "products"], // Auth tokens + local cart survive reloads
 };
 
 // Combine all reducers
 const rootReducer = combineReducers({
   auth: AuthSlice,
-  commonSlice: commonSlice,
+  ui: uiReducer,
   userSlice: userSlice,
   products: productReducer,
   [API_Query.reducerPath]: API_Query.reducer,
@@ -51,33 +50,10 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: ["persist/PERSIST", "persist/REHYDRATE"],
       },
-    }).concat(API_Query.middleware, cartSyncMiddleware),
+    }).concat(API_Query.middleware, cartSyncMiddleware, rtkErrorMiddleware),
 });
 
 // Create persistor
 export const persistor = persistStore(store);
 
 setupListeners(store.dispatch);
-
-// import { configureStore } from "@reduxjs/toolkit";
-// import { setupListeners } from "@reduxjs/toolkit/query";
-// import { API_Query } from "./API_Query/APIQuery";
-// import AuthSlice from "./API_Slices/AuthSlice";
-// import productReducer from "./API_Slices/productSlice";
-
-// import commonSlice from "./API_Slices/commonSlice";
-// import userSlice from "./API_Slices/userSlice";
-
-// export const store = configureStore({
-//   reducer: {
-//     userSlice: AuthSlice,
-//     commonSlice: commonSlice,
-//     userSlice: userSlice,
-//     products: productReducer,
-//     [API_Query.reducerPath]: API_Query.reducer,
-//   },
-//   middleware: (getDefaultMiddleware) =>
-//     getDefaultMiddleware().concat(API_Query.middleware),
-//   serializableCheck: false,
-// });
-// setupListeners(store.dispatch);

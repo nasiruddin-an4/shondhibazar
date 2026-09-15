@@ -64,33 +64,9 @@ const TabsSection = ({
       variants={tabVariants}
     >
       {/* Tab Headers */}
-      <div className="border-b mb-8 overflow-x-auto overflow-y-hidden ">
-        <div className="flex min-w-max space-x-4 sm:space-x-8 px-4 sm:px-0">
-          <motion.button
-            onClick={() => setActiveTab("description")}
-            className={`px-4 sm:px-6 py-4 text-base sm:text-lg font-medium relative transition-colors
-                ${
-                  activeTab === "description"
-                    ? "text-green-600"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            Description
-            <AnimatePresence>
-              {activeTab === "description" && (
-                <motion.span
-                  className="absolute bottom-0 left-0 w-full h-0.5 bg-green-500"
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                  variants={underlineVariants}
-                  transition={{ duration: 0.2 }}
-                />
-              )}
-            </AnimatePresence>
-          </motion.button>
+      <div className="border-b mb-8 overflow-x-auto overflow-y-hidden">
+        <div className="flex justify-center min-w-max space-x-4 sm:space-x-12 px-4 sm:px-0">
+
 
           <motion.button
             onClick={() => setActiveTab("additional")}
@@ -107,7 +83,7 @@ const TabsSection = ({
             <AnimatePresence>
               {activeTab === "additional" && (
                 <motion.span
-                  className="absolute bottom-0 left-0 w-full h-0.5 bg-green-500"
+                  className="absolute bottom-0 left-0 w-full h-[3px] bg-[#8cc247]"
                   initial="hidden"
                   animate="visible"
                   exit="exit"
@@ -120,7 +96,7 @@ const TabsSection = ({
 
           <motion.button
             onClick={() => setActiveTab("reviews")}
-            className={`px-4 sm:px-6 py-4 text-base sm:text-lg font-medium relative transition-colors
+            className={`px-4 sm:px-6 py-4 text-base sm:text-lg font-medium relative transition-colors flex items-center gap-2
                 ${
                   activeTab === "reviews"
                     ? "text-green-600"
@@ -129,11 +105,14 @@ const TabsSection = ({
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
-            Reviews ({reviews?.length || 0})
+            Reviews
+            <span className="bg-[#8cc247] text-white text-xs font-bold px-2 py-0.5 rounded-full">
+              {reviews?.length || 0}
+            </span>
             <AnimatePresence>
               {activeTab === "reviews" && (
                 <motion.span
-                  className="absolute bottom-0 left-0 w-full h-0.5 bg-green-500"
+                  className="absolute bottom-0 left-0 w-full h-[3px] bg-[#8cc247]"
                   initial="hidden"
                   animate="visible"
                   exit="exit"
@@ -157,7 +136,6 @@ const TabsSection = ({
           transition={{ duration: 0.2 }}
           className="bg-white rounded-lg p-6"
         >
-          {activeTab === "description" && <Description product={product} />}
           {activeTab === "additional" && <Additional product={product} />}
           {activeTab === "reviews" && (
             <Reviews reviews={reviews} productId={product.id} isLoading={reviewsLoading} />

@@ -1,46 +1,104 @@
-// components/layout/MainNavbar.tsx
+// components/layout/MainNavbar.jsx
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ShoppingCart, ChevronDown, Heart } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import AuthModal from "@/components/Auth/AuthModal";
 import ShortUserMenu from "@/components/Auth/ShortUserMenu";
-import { NumberCounter } from "@/lib/NumberCounter";
-import { useGetWishlistQuery } from "@/redux/API_Query/ecommerceApi";
+import { useGetWishlistQuery, useGetCategoriesQuery } from "@/redux/API_Query/ecommerceApi";
 
-const menuItems = [
-  // {
-  //   title: "About Store",
-  //   submenu: ["Our Story", "Contact Us", "Locations"],
-  // },
-  {
-    title: "Rice & Grains",
-    submenu: ["Basmati Rice", "Regular Rice", "Pulses"],
-  },
-  {
-    title: "Meat, Fish & Poultry",
-    submenu: ["Fresh Fish", "Chicken", "Beef", "Mutton"],
-  },
+// ─────────────────────────────────────────────────────────────────────
+// Nav Group Configuration
+// Matches the exact structure from the production site.
+// ─────────────────────────────────────────────────────────────────────
+const NAV_GROUPS = [
 
   {
-    title: "Spices & Hearbs",
-    submenu: ["Whole Spices", "Ground Spices", "Fresh Herbs"],
+    label: "Proteins & Dairy",
+    keywords: ["chicken", "dairy", "dried fish", "fish", "meat", "egg", "seafood"],
   },
   {
-    title: "Sugar & Honey",
-    submenu: ["Raw Sugar", "Processed Sugar", "Natural Honey"],
+    label: "Rice, Grains & Lentils",
+    keywords: ["rice", "flour", "lentil", "চাল", "আটা", "ডাল"],
   },
   {
-    title: "Oil & Ghee",
-    submenu: ["Cooking Oil", "Pure Ghee", "Olive Oil"],
+    label: "Spices & Seasonings",
+    keywords: ["spice", "seasoning", "মসলা"],
+    expandChildren: true,
+  },
+  {
+    label: "Oils, Sugar & Honey",
+    keywords: ["oil", "ghee", "honey", "sugar", "gurr"],
+  },
+  {
+    label: "Pickles & Pantry",
+    keywords: ["pickle", "dry food", "combo", "diet food", "canned", "আঁচার"],
   },
 ];
 
-const moreItems = ["Beverages", "Snacks", "Personal Care", "Household"];
+// Check if a category name matches any keyword in a group
+function matchesGroup(categoryName, keywords) {
+  const lower = categoryName.toLowerCase();
+  return keywords.some((kw) => lower.includes(kw.toLowerCase()));
+}
+
+// Build the nav structure from API categories + config groups
+function buildNavItems(apiCategories) {
+  const used = new Set();
+  const navItems = [];
+
+  for (const group of NAV_GROUPS) {
+    if (group.isLinkOnly) {
+      navItems.push({
+        label: group.label,
+        items: [],
+        isLinkOnly: true,
+        link: group.link,
+      });
+      continue;
+    }
+
+    const matchedItems = [];
+
+    for (const cat of apiCategories) {
+      if (used.has(cat.name)) continue;
+      if (!matchesGroup(cat.name, group.keywords)) continue;
+
+      used.add(cat.name);
+
+      // If this group wants children expanded and the category has children,
+      // add the children as dropdown items + an "All {Category}" link
+      if (group.expandChildren && cat.subcategories?.length > 0) {
+        for (const child of cat.subcategories) {
+          matchedItems.push({ name: child.name, id: child.id });
+        }
+        matchedItems.push({ name: `All ${cat.name}`, linkName: cat.name, id: `all-${cat.id}` });
+      } else {
+        matchedItems.push({ name: cat.name, id: cat.id });
+      }
+    }
+
+    if (matchedItems.length > 0) {
+      navItems.push({
+        label: group.label,
+        items: matchedItems,
+      });
+    }
+  }
+
+  // Collect unmatched categories → "More" (excluding "Uncategorized")
+  const moreItems = apiCategories
+    .filter((cat) => !used.has(cat.name) && cat.name.toLowerCase() !== "uncategorized")
+    .map((cat) => ({ name: cat.name, id: cat.id }));
+
+  return { navItems, moreItems };
+}
+
+// ─── Components ──────────────────────────────────────────────────────
 
 const WishlistButton = ({ isSignedIn }) => {
   const { data: wishlist } = useGetWishlistQuery(undefined, { skip: !isSignedIn });
@@ -76,186 +134,270 @@ const CartButton = ({ onOpenCart, cartCount }) => (
   </motion.button>
 );
 
+// ── A single nav group with hover dropdown ───────────────────────────
+const NavGroup = ({ label, items, currentCategory, hoveredItem, setHoveredItem, isLinkOnly, link }) => {
+  if (isLinkOnly) {
+    return (
+      <Link href={link}>
+        <div
+          className={`flex items-center space-x-1 py-4 cursor-pointer transition-colors text-sm font-medium whitespace-nowrap text-gray-700 hover:text-green-600`}
+        >
+          <span>{label}</span>
+        </div>
+      </Link>
+    );
+  }
+
+  const isActive = items.some(
+    (item) => (item.linkName || item.name) === currentCategory
+  );
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setHoveredItem(label)}
+      onMouseLeave={() => setHoveredItem(null)}
+    >
+      <div
+        className={`flex items-center space-x-1 py-4 cursor-pointer transition-colors text-sm font-medium whitespace-nowrap ${isActive
+          ? "text-green-600"
+          : "text-gray-700 hover:text-green-600"
+          }`}
+      >
+        <span>{label}</span>
+        <ChevronDown
+          size={14}
+          className={`transition-transform duration-200 ${hoveredItem === label ? "rotate-180" : ""
+            }`}
+        />
+      </div>
+
+      {/* Active/hover underline */}
+      <motion.div
+        className="absolute bottom-0 left-0 right-0 h-[2px] bg-green-600"
+        initial={{ scaleX: 0 }}
+        animate={{ scaleX: hoveredItem === label || isActive ? 1 : 0 }}
+        transition={{ duration: 0.2 }}
+        style={{ originX: 0 }}
+      />
+
+      {/* Dropdown */}
+      <AnimatePresence>
+        {hoveredItem === label && (
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 6 }}
+            transition={{ duration: 0.15 }}
+            className="absolute top-full left-0 z-20 bg-white shadow-lg rounded-b-lg border border-t-0 border-gray-100 py-1.5 min-w-[220px]"
+          >
+            {items.map((item) => (
+              <Link
+                key={item.id || item.name}
+                href={`/product-category?category=${encodeURIComponent(item.linkName || item.name)}`}
+                className={`block px-4 py-2 text-sm transition-colors ${currentCategory === (item.linkName || item.name)
+                  ? "text-green-700 font-medium bg-green-50"
+                  : "text-gray-600 hover:bg-green-50 hover:text-green-700"
+                  }`}
+              >
+                {item.name}
+              </Link>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+// ── "More" overflow dropdown ─────────────────────────────────────────
+const MoreDropdown = ({ items, currentCategory, hoveredItem, setHoveredItem }) => {
+  if (items.length === 0) return null;
+
+  const isActive = items.some((item) => item.name === currentCategory);
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setHoveredItem("__more__")}
+      onMouseLeave={() => setHoveredItem(null)}
+    >
+      <div
+        className={`flex items-center space-x-1 py-4 cursor-pointer transition-colors text-sm font-medium whitespace-nowrap ${isActive
+          ? "text-green-600"
+          : "text-gray-700 hover:text-green-600"
+          }`}
+      >
+        <span>More</span>
+        <ChevronDown
+          size={14}
+          className={`transition-transform duration-200 ${hoveredItem === "__more__" ? "rotate-180" : ""
+            }`}
+        />
+      </div>
+
+      <motion.div
+        className="absolute bottom-0 left-0 right-0 h-[2px] bg-green-600"
+        initial={{ scaleX: 0 }}
+        animate={{ scaleX: hoveredItem === "__more__" || isActive ? 1 : 0 }}
+        transition={{ duration: 0.2 }}
+        style={{ originX: 0 }}
+      />
+
+      <AnimatePresence>
+        {hoveredItem === "__more__" && (
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 6 }}
+            transition={{ duration: 0.15 }}
+            className="absolute top-full right-0 z-20 bg-white shadow-lg rounded-b-lg border border-t-0 border-gray-100 py-1.5 min-w-[220px] max-h-[60vh] overflow-y-auto"
+          >
+            {items.map((item) => (
+              <Link
+                key={item.id || item.name}
+                href={`/product-category?category=${encodeURIComponent(item.name)}`}
+                className={`block px-4 py-2 text-sm transition-colors ${currentCategory === item.name
+                  ? "text-green-700 font-medium bg-green-50"
+                  : "text-gray-600 hover:bg-green-50 hover:text-green-700"
+                  }`}
+              >
+                {item.name}
+              </Link>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+// ── Loading skeleton ─────────────────────────────────────────────────
+const NavSkeleton = () => (
+  <div className="flex items-center space-x-6">
+    {Array.from({ length: 6 }).map((_, i) => (
+      <div key={i} className="py-4">
+        <div
+          className="h-4 bg-gray-200 rounded animate-pulse"
+          style={{ width: `${80 + Math.random() * 50}px` }}
+        />
+      </div>
+    ))}
+  </div>
+);
+
+// ─── Main Navbar ─────────────────────────────────────────────────────
 const MainNavbar = ({ onOpenCart }) => {
   const [isSticky, setIsSticky] = useState(false);
-  const [hoveredItem, setHoveredItem] = useState();
+  const [hoveredItem, setHoveredItem] = useState(null);
   const searchParams = useSearchParams();
   const currentCategory = searchParams ? searchParams.get("category") : null;
 
   const cart = useSelector((state) => state.products.cart);
-  const products = useSelector((state) => state.products.products);
-  const dispatch = useDispatch();
   const isSignedIn = useSelector((state) => !!state.auth?.token);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
-  // Calculate cart total
-  const cartTotal = cart.reduce((total, item) => {
-    return total + item.price * item.quantity;
-  }, 0);
+  const { data: categoriesRes, isLoading: categoriesLoading } = useGetCategoriesQuery();
+  const allCategories = useMemo(() => categoriesRes?.data || [], [categoriesRes]);
+
+  // Build grouped nav items from flat API categories
+  const { navItems, moreItems } = useMemo(
+    () => buildNavItems(allCategories),
+    [allCategories]
+  );
 
   useEffect(() => {
-    const handleScroll = () => {
-      setIsSticky(window.scrollY > 100);
-    };
-
+    const handleScroll = () => setIsSticky(window.scrollY > 100);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
     <>
-      {/* Spacer to prevent layout shift when navbar becomes fixed */}
-      {isSticky && <div className="h-[76px] w-full" />}
+      {isSticky && <div className="h-[52px] w-full" />}
       <motion.nav
         initial={false}
         animate={isSticky ? { y: [-100, 0] } : { y: 0 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
-        className={`w-full bg-gray-50 z-50 ${
-          isSticky ? "fixed top-0 left-0 shadow-md" : "relative"
-        }`}
+        className={`w-full bg-white border-b border-gray-200 z-50 ${isSticky ? "fixed top-0 left-0 shadow-md" : "relative"
+          }`}
       >
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between">
-          {isSticky && (
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <Link href="/">
-                <Image
-                  src="/images/logo2.png"
-                  alt="ShondhiBazar"
-                  width={120}
-                  height={40}
-                  className="h-12 w-auto"
-                />
-              </Link>
-            </motion.div>
-          )}
-
-          <div className="flex items-center space-x-6">
-            {menuItems.map((item) => (
-              <div
-                key={item.title}
-                className="relative"
-                onMouseEnter={() => setHoveredItem(item.title)}
-                onMouseLeave={() => setHoveredItem(null)}
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between">
+            {/* Logo (sticky only) */}
+            {isSticky && (
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3 }}
+                className="mr-6 shrink-0"
               >
-                <Link href={`/product-category?category=${encodeURIComponent(item.title)}`}>
-                  <div
-                    className={`flex items-center space-x-1 py-4 cursor-pointer transition-colors ${
-                      currentCategory === item.title ? "text-green-600 font-semibold" : "text-gray-800 hover:text-green-600"
-                    }`}
-                  >
-                    <span>{item.title}</span>
-                    <ChevronDown size={16} />
-                  </div>
+                <Link href="/">
+                  <Image
+                    src="/images/logo2.png"
+                    alt="ShondhiBazar"
+                    width={100}
+                    height={32}
+                    className="h-10 w-auto"
+                  />
                 </Link>
-
-                {/* Animated underline */}
-                <motion.div
-                  className="h-0.5 bg-green-600"
-                  initial={{ width: 0 }}
-                  animate={{ width: hoveredItem === item.title ? "100%" : 0 }}
-                  transition={{ duration: 0.2 }}
-                />
-
-                {/* Submenu */}
-                <AnimatePresence>
-                  {hoveredItem === item.title && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 10 }}
-                      transition={{ duration: 0.2 }}
-                      className="absolute top-full left-0 z-20 bg-white shadow-lg rounded-lg py-2 w-48"
-                    >
-                      {item.submenu.map((subItem) => (
-                        <Link
-                          key={subItem}
-                          href={`/product-category?category=${encodeURIComponent(subItem)}`}
-                          className="block px-4 py-2 hover:bg-gray-50 hover:text-green-600 transition-colors"
-                        >
-                          {subItem}
-                        </Link>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            ))}
-
-            {/* More+ dropdown */}
-            <div
-              className="relative"
-              onMouseEnter={() => setHoveredItem("more")}
-              onMouseLeave={() => setHoveredItem(null)}
-            >
-              <div
-                className={`flex items-center space-x-1 py-4 cursor-pointer transition-colors ${
-                  currentCategory && moreItems.includes(currentCategory) ? "text-green-600 font-semibold" : "text-gray-800 hover:text-green-600"
-                }`}
-              >
-                <span>More+</span>
-                <ChevronDown size={16} />
-              </div>
-
-              <AnimatePresence>
-                {hoveredItem === "more" && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
-                    transition={{ duration: 0.2 }}
-                    className="absolute top-full z-20 right-0 bg-white shadow-lg rounded-lg py-2 w-48"
-                  >
-                    {moreItems.map((item) => (
-                      <Link
-                        key={item}
-                        href={`/product-category?category=${encodeURIComponent(item)}`}
-                        className="block px-4 py-2 hover:bg-gray-50 hover:text-green-600 transition-colors"
-                      >
-                        {item}
-                      </Link>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          </div>
-
-          {/* Cart with total */}
-          {/* <div className="flex items-center space-x-2">
-            <ShoppingCart size={20} className="text-green-600" />
-            <span className="font-medium">2,250.00৳</span>
-          </div> */}
-          <div className="flex items-center space-x-4">
-            {/* Auth / Login Button */}
-            {!isSignedIn ? (
-              <button
-                onClick={() => setShowAuthModal(true)}
-                className="py-2 px-3 rounded bg-green-600 text-white font-medium hover:bg-green-700 transition"
-              >
-                Login
-              </button>
-            ) : (
-              <ShortUserMenu />
+              </motion.div>
             )}
 
-            <WishlistButton isSignedIn={isSignedIn} />
+            {/* Category navigation */}
+            {categoriesLoading ? (
+              <NavSkeleton />
+            ) : (
+              <div className="flex items-center space-x-5">
+                {navItems.map((group) => (
+                  <NavGroup
+                    key={group.label}
+                    label={group.label}
+                    items={group.items}
+                    isLinkOnly={group.isLinkOnly}
+                    link={group.link}
+                    currentCategory={currentCategory}
+                    hoveredItem={hoveredItem}
+                    setHoveredItem={setHoveredItem}
+                  />
+                ))}
 
-            <CartButton cartCount={cart.reduce((acc, item) => acc + item.quantity, 0)} onOpenCart={onOpenCart} />
+                <MoreDropdown
+                  items={moreItems}
+                  currentCategory={currentCategory}
+                  hoveredItem={hoveredItem}
+                  setHoveredItem={setHoveredItem}
+                />
+              </div>
+            )}
+
+            {/* Right: Auth, Wishlist, Cart */}
+            <div className="flex items-center space-x-3">
+              {!isSignedIn ? (
+                <button
+                  onClick={() => setShowAuthModal(true)}
+                  className="py-2 px-4 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition-colors"
+                >
+                  Login
+                </button>
+              ) : (
+                <ShortUserMenu />
+              )}
+
+              <WishlistButton isSignedIn={isSignedIn} />
+              <CartButton
+                cartCount={cart.reduce((acc, item) => acc + item.quantity, 0)}
+                onOpenCart={onOpenCart}
+              />
+            </div>
+
+            <AuthModal
+              open={showAuthModal}
+              onClose={() => setShowAuthModal(false)}
+            />
           </div>
-
-          {/* Auth Modal */}
-          <AuthModal
-            open={showAuthModal}
-            onClose={() => setShowAuthModal(false)}
-          />
         </div>
-      </div>
-    </motion.nav>
+      </motion.nav>
     </>
   );
 };

@@ -17,6 +17,11 @@ import {
   RefreshCcw,
   ShoppingCart,
   TruckIcon,
+  ChevronUp,
+  ChevronDown,
+  ChevronRight,
+  Star,
+  ShieldCheck,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -25,7 +30,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { motion, AnimatePresence } from "motion/react";
 import { NumberCounter } from "@/lib/NumberCounter";
 import TabsSection from "@/components/ProductDetails/TabsSection";
-import { useGetProductReviewsQuery } from "@/redux/API_Query/ecommerceApi";
+import { useGetProductReviewsQuery, useGetProductBySlugQuery, useGetProductsQuery } from "@/redux/API_Query/ecommerceApi";
 import WishlistButton from "@/components/Wishlist/WishlistButton";
 
 const ProductSkeleton = () => (
@@ -63,7 +68,7 @@ const fadeIn = {
 const ProductDetails = ({ params }) => {
   const dispatch = useDispatch();
   const [quantity, setQuantity] = useState(1);
-  const [activeTab, setActiveTab] = useState("description");
+  const [activeTab, setActiveTab] = useState("additional");
 
   const [isClient, setIsClient] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -79,20 +84,46 @@ const ProductDetails = ({ params }) => {
   const resolvedParams = use(params);
   const routeSlug = resolvedParams.slug;
 
-  const products = useSelector((state) => state.products.products);
-  // Support both the SEO-friendly slug and the raw id (old links / directly-shared UUIDs
-  // still resolve), but the cart/selection identity below always uses the real product id.
-  const product = products.find((p) => p.slug === routeSlug || p.id === routeSlug);
+  const { data: product, isLoading: productLoading } = useGetProductBySlugQuery(routeSlug);
   const productId = product?.id;
 
+  // Some catalog entries list the same weight more than once (duplicate variants);
+  // collapse them to one button each, keeping the first occurrence of each label.
+  const uniqueSizes = [];
+  if (product?.sizes) {
+    const seenLabels = new Set();
+    for (const size of product.sizes) {
+      if (!seenLabels.has(size.size)) {
+        seenLabels.add(size.size);
+        uniqueSizes.push(size);
+      }
+    }
+  }
+
+  const { data: productsRes, isLoading: relatedLoading } = useGetProductsQuery({ limit: 100 });
+  const allProducts = Array.isArray(productsRes) ? productsRes : (productsRes?.data || []);
+
+  // Prefer same-category products, but backfill with other products so the
+  // "You may also like" section is never left empty for sparsely-populated categories.
   const relatedProducts = product
-    ? products.filter((p) => p.id !== product.id && p.category === product.category).slice(0, 4)
+    ? (() => {
+        const sameCategory = allProducts.filter(
+          (p) => p.id !== product.id && p.category === product.category
+        );
+        if (sameCategory.length >= 4) return sameCategory.slice(0, 4);
+        const otherIds = new Set(sameCategory.map((p) => p.id));
+        const others = allProducts.filter((p) => p.id !== product.id && !otherIds.has(p.id));
+        return [...sameCategory, ...others].slice(0, 4);
+      })()
     : [];
 
   const { data: reviewsRes, isLoading: reviewsLoading } = useGetProductReviewsQuery(productId, {
     skip: !product,
   });
   const reviews = reviewsRes?.data || [];
+  const averageRating = reviews.length
+    ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+    : 0;
 
   const selectedSize = useSelector(
     (state) => state.products.selectedSize[productId]
@@ -115,6 +146,16 @@ const ProductDetails = ({ params }) => {
       setQuantity(1);
     }
   }, [cartItem]);
+
+  // Default to the first weight option. Only fires while selectedSize has never been
+  // touched (undefined) — after "Clear selection" it's explicitly set to null, which
+  // this leaves alone so Clear still works.
+  const defaultSizeId = uniqueSizes[0]?.id;
+  useEffect(() => {
+    if (productId && defaultSizeId && selectedSize === undefined) {
+      dispatch(selectSize({ productId, variantId: defaultSizeId }));
+    }
+  }, [productId, defaultSizeId, selectedSize, dispatch]);
 
   // const getCurrentPrice = () => {
   //   if (!selectedSize && product) {
@@ -236,7 +277,7 @@ const ProductDetails = ({ params }) => {
     getCurrentPrice(); // This will now return null since selectedSize is null
   };
 
-  if (isLoading) {
+  if (productLoading) {
     return <ProductSkeleton />;
   }
 
@@ -304,23 +345,26 @@ const ProductDetails = ({ params }) => {
     >
       {/* Breadcrumb */}
       <motion.div
-        className="flex items-center gap-2 text-sm text-gray-600 mb-6"
+        className="flex items-center gap-1.5 text-sm text-gray-500 mb-6 flex-wrap"
         variants={fadeIn}
       >
-        <Link href="/" className="hover:text-green-600">
+        <Link href="/" className="hover:text-green-600 transition-colors">
           Home
         </Link>
-        <span className="mx-2 text-gray-500">/</span>
-        <Link href="/product-category" className="hover:text-green-600">
+        <ChevronRight size={14} className="text-gray-300 shrink-0" />
+        <Link
+          href={`/product-category?category=${encodeURIComponent(product.category)}`}
+          className="hover:text-green-600 transition-colors"
+        >
           {product.category}
         </Link>
-        <span className="mx-2 text-gray-500">/</span>
-        <span className="text-gray-400">{product.name}</span>
+        <ChevronRight size={14} className="text-gray-300 shrink-0" />
+        <span className="text-gray-800 font-medium truncate max-w-[60vw]">{product.name}</span>
       </motion.div>
 
       {/* Main Product Section */}
       <motion.div
-        className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-16"
+        className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 mb-16"
         variants={fadeIn}
       >
         {/* Product Images */}
@@ -329,13 +373,24 @@ const ProductDetails = ({ params }) => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="bg-[#faf9f7] rounded-xl p-8 mb-4">
+          <div className="relative bg-[#faf9f7] rounded-2xl border border-gray-100 p-8 mb-4 md:sticky md:top-24 overflow-hidden group">
+            <span className="absolute top-4 left-4 z-10 bg-white/90 backdrop-blur-sm text-gray-700 text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
+              {product.category}
+            </span>
+            <div className="absolute top-4 right-4 z-10">
+              <WishlistButton
+                variantId={selectedSize || product.sizes?.[0]?.id}
+                size={18}
+                className="h-9 w-9 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-sm shadow-sm hover:bg-white transition-colors"
+              />
+            </div>
             <Image
               src={product.image}
               alt={product.name}
               width={600}
               height={450}
-              className="w-full h-auto object-contain"
+              className="w-full h-auto object-contain transition-transform duration-500 group-hover:scale-105"
+              unoptimized={product.image?.toLowerCase().endsWith(".gif")}
             />
           </div>
         </motion.div>
@@ -347,43 +402,69 @@ const ProductDetails = ({ params }) => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h1 className="text-3xl font-bold text-gray-800">{product.name}</h1>
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold text-gray-800 leading-tight">{product.name}</h1>
+            {reviews.length > 0 && (
+              <button
+                type="button"
+                onClick={() => setActiveTab("reviews")}
+                className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 transition-colors"
+              >
+                <span className="flex items-center gap-0.5">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      size={15}
+                      className={
+                        star <= Math.round(averageRating)
+                          ? "fill-yellow-400 text-yellow-400"
+                          : "fill-gray-200 text-gray-200"
+                      }
+                    />
+                  ))}
+                </span>
+                <span className="font-medium text-gray-700">{averageRating.toFixed(1)}</span>
+                <span className="underline decoration-transparent hover:decoration-gray-400">
+                  ({reviews.length} review{reviews.length === 1 ? "" : "s"})
+                </span>
+              </button>
+            )}
+          </div>
 
-          <div className="mb-3">
+          <div className="mb-2">
             {isInCart || selectedSize ? (
-              <span className="text-green-600 font-medium">
-                {quantity} × {unitPrice?.toFixed(2)}৳
+              <span className="text-green-600 font-bold text-2xl">
+                {unitPrice?.toFixed(2)}৳
               </span>
             ) : (
-              <span className="text-green-600 font-medium">
-                {product.price.min.toFixed(2)}৳ - {product.price.max.toFixed(2)}
-                ৳
+              <span className="text-green-600 font-bold text-2xl">
+                {product.price.min.toFixed(2)}৳ - {product.price.max.toFixed(2)}৳
               </span>
             )}
           </div>
 
-          <div className="prose prose-green max-w-none">
+          <div className="prose prose-green max-w-none mb-6">
             <div className="text-gray-600 whitespace-pre-line">
               {product.description}
             </div>
           </div>
 
           {/* Weight Selection */}
-          <motion.div className="space-y-4" variants={fadeIn}>
-            <h3 className="font-medium text-gray-700">
-              WEIGHT {selectedSizeLabel && `: ${selectedSizeLabel}`}
+          <motion.div className="space-y-3 mb-2" variants={fadeIn}>
+            <h3 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+              WEIGHT: {selectedSizeLabel ? <span className="font-normal normal-case">{selectedSizeLabel}</span> : <span className="font-normal normal-case text-gray-400">No selection</span>}
             </h3>
-            <div className="flex flex-wrap gap-3">
-              {product.sizes.map((size) => (
+            <div className="flex flex-wrap gap-2">
+              {uniqueSizes.map((size) => (
                 <motion.button
                   key={size.id}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
                   onClick={() => handleSizeSelect(size)}
-                  className={`px-4 py-2 border rounded-md transition-colors ${
+                  className={`px-4 py-2 rounded-full border text-sm transition-all ${
                     selectedSize === size.id
-                      ? "border-green-500 bg-green-50 text-green-600"
-                      : "border-gray-300 hover:border-green-500"
+                      ? "border-green-600 bg-green-50 text-green-700 font-medium ring-1 ring-green-600"
+                      : "border-gray-300 text-gray-700 hover:border-green-400 hover:bg-green-50/50"
                   }`}
                 >
                   {size.size}
@@ -391,85 +472,93 @@ const ProductDetails = ({ params }) => {
               ))}
             </div>
             {totalPrice && (
-              <div className="flex items-center space-x-8 ">
-                <p className="text-lg font-bold w-32">
-                  <NumberCounter value={Number(totalPrice)} /> ৳
-                </p>
+              <div className="flex items-center space-x-4">
                 <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={handleClear}
-                  className=" underline text-green-500 px-2 py-1 hover:text-red-400"
+                  className="text-sm underline text-gray-500 hover:text-red-500 transition-colors"
                 >
-                  Clear
+                  Clear selection
                 </motion.button>
               </div>
             )}
           </motion.div>
 
           {/* Add to Cart Section */}
-          <div className="flex flex-col sm:flex-row gap-4 w-full">
-            {showQuantityControls && (
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="flex items-center border rounded-md w-full sm:w-auto h-12 sm:h-10"
-              >
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => handleQuantityChange(-1)}
-                  className="flex-1 sm:w-12 h-full flex items-center justify-center border-r hover:bg-gray-50 min-w-[48px] active:bg-gray-100"
-                  aria-label="Decrease quantity"
-                >
-                  <Minus size={24} className="text-gray-600" />
-                </motion.button>
-                <span className="flex-1 sm:w-16 h-full flex items-center justify-center font-medium text-lg min-w-[48px]">
-                  {quantity}
-                </span>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+          <div className="flex items-center gap-3 w-full mb-2 pt-4">
+            <div className="flex items-center border border-gray-300 rounded-lg h-12 w-[100px] bg-white shrink-0">
+              <span className="flex-1 text-center font-medium text-gray-800">
+                {quantity}
+              </span>
+              <div className="flex flex-col border-l border-gray-300 h-full w-8">
+                <button
+                  className="flex-1 flex items-center justify-center border-b border-gray-300 hover:bg-gray-50 active:bg-gray-100 transition-colors rounded-tr-lg"
                   onClick={() => handleQuantityChange(1)}
-                  className="flex-1 sm:w-12 h-full flex items-center justify-center border-l hover:bg-gray-50 min-w-[48px] active:bg-gray-100"
                   aria-label="Increase quantity"
                 >
-                  <Plus size={24} className="text-gray-600" />
-                </motion.button>
-              </motion.div>
-            )}
+                  <ChevronUp size={14} className="text-gray-600" />
+                </button>
+                <button
+                  className="flex-1 flex items-center justify-center hover:bg-gray-50 active:bg-gray-100 transition-colors rounded-br-lg"
+                  onClick={() => handleQuantityChange(-1)}
+                  aria-label="Decrease quantity"
+                >
+                  <ChevronDown size={14} className="text-gray-600" />
+                </button>
+              </div>
+            </div>
 
             <motion.button
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: selectedSize ? 1.01 : 1 }}
+              whileTap={{ scale: selectedSize ? 0.99 : 1 }}
               onClick={handleAddToCart}
               disabled={!selectedSize}
-              className={`flex-1 ${
+              className={`flex-1 h-12 px-6 rounded-lg shadow-sm ${
                 selectedSize
-                  ? "bg-green-500 hover:bg-green-600"
-                  : "bg-gray-300 cursor-not-allowed"
-              } text-white py-3 px-6 rounded-md 
-    transition-colors font-medium flex items-center justify-center gap-2`}
+                  ? "bg-green-500 hover:bg-green-600 text-white"
+                  : "bg-gray-200 text-gray-400 cursor-not-allowed"
+              } transition-colors font-semibold flex items-center justify-center gap-2`}
             >
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={buttonText}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  className="flex items-center gap-2"
-                >
-                  <ShoppingCart size={20} />
-                  <span>{buttonText}</span>
-                </motion.div>
-              </AnimatePresence>
+              <ShoppingCart size={18} />
+              <span>{buttonText}</span>
             </motion.button>
+          </div>
 
-            <WishlistButton
-              variantId={selectedSize}
-              size={20}
-              className="h-12 sm:h-10 w-12 sm:w-10 shrink-0 flex items-center justify-center rounded-md border border-gray-200 hover:bg-gray-50 transition-colors disabled:opacity-60"
-            />
+          {/* Flat Shipping Rate */}
+          <div className="border-t border-gray-200 pt-6 mb-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="flex items-start gap-3">
+              <div className="h-9 w-9 rounded-full bg-green-50 flex items-center justify-center shrink-0">
+                <TruckIcon size={18} className="text-green-600" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-gray-800">Flat shipping, all over Dhaka</p>
+                <p className="text-xs text-gray-500 mt-0.5">Order before 2:30pm for same-day dispatch (Uttara only)</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="h-9 w-9 rounded-full bg-green-50 flex items-center justify-center shrink-0">
+                <RefreshCcw size={18} className="text-green-600" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-gray-800">3 days easy returns</p>
+                <p className="text-xs text-gray-500 mt-0.5">Not satisfied? Send it back, hassle-free</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Guaranteed Safe Checkout */}
+          <div className="border border-gray-200 rounded-xl p-4 text-center mb-2 mt-2 bg-gray-50/50">
+            <span className="text-xs font-bold uppercase flex items-center justify-center gap-1.5 text-gray-800 tracking-wide">
+              <ShieldCheck size={14} className="text-green-600" />
+              Guaranteed Safe Checkout
+            </span>
+            <div className="flex justify-center items-center gap-3 mt-4">
+               {/* Using generic placeholders as requested in the plan */}
+               <div className="px-3 py-1 bg-white text-xs font-bold text-gray-600 border border-gray-200 rounded">EBL SKYPAY</div>
+               <div className="px-3 py-1 bg-white text-xs font-bold text-gray-600 border border-gray-200 rounded">Mastercard</div>
+               <div className="px-3 py-1 bg-white text-xs font-bold text-gray-600 border border-gray-200 rounded">Visa</div>
+            </div>
           </div>
         </motion.div>
       </motion.div>
@@ -484,26 +573,57 @@ const ProductDetails = ({ params }) => {
         isLoading={isLoading}
       />
 
+      {/* Meta Information */}
+      <div className="mt-12 pt-6 text-sm flex flex-col md:flex-row items-center justify-center gap-4 text-gray-800 pb-12 border-b border-gray-100">
+        <div>
+          <span className="font-semibold text-gray-900">SKU:</span>{" "}
+          <span className="text-gray-600">N/A</span>
+        </div>
+        <div className="hidden md:block text-gray-300">|</div>
+        <div>
+          <span className="font-semibold text-gray-900">Categories:</span>{" "}
+          <Link href="/product-category" className="text-gray-600 hover:text-green-600 underline decoration-transparent hover:decoration-green-600 transition-all">All Products</Link>
+          <span className="text-gray-400 mx-1">,</span>
+          <Link href={`/product-category?category=${encodeURIComponent(product.category)}`} className="text-gray-600 hover:text-green-600 underline decoration-transparent hover:decoration-green-600 transition-all">{product.category}</Link>
+        </div>
+      </div>
+
       {/* Related Products */}
-      {relatedProducts.length > 0 && (
+      {(relatedLoading || relatedProducts.length > 0) && (
       <motion.div
         variants={fadeIn}
         initial="initial"
         animate="animate"
         exit="exit"
       >
-        <h2 className="text-2xl font-bold mb-8">Related products</h2>
+        <div className="flex items-end justify-between mb-8 gap-4">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-800">You may also like</h2>
+            <p className="text-sm text-gray-500 mt-1">More picks from {product.category}</p>
+          </div>
+          <Link
+            href={`/product-category?category=${encodeURIComponent(product.category)}`}
+            className="hidden sm:flex items-center gap-1 text-sm font-medium text-green-600 hover:text-green-700 transition-colors shrink-0"
+          >
+            View all
+            <ChevronRight size={16} />
+          </Link>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {relatedProducts.map((item, index) => (
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-            >
-              <ProductCard product={item} />
-            </motion.div>
-          ))}
+          {relatedLoading
+            ? Array.from({ length: 4 }).map((_, index) => (
+                <ProductCard key={index} product={{ sizes: [] }} isLoading />
+              ))
+            : relatedProducts.map((item, index) => (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <ProductCard product={item} />
+                </motion.div>
+              ))}
         </div>
       </motion.div>
       )}

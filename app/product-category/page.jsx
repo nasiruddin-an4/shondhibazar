@@ -5,7 +5,6 @@
 // `/details/[slug]` (a path param, not a query string). The actual filtering
 // UI stays exactly as it was, just moved into ProductCategoryClient.jsx so
 // this file can stay a server component and read searchParams.
-import { categories } from "./categories";
 import ProductCategoryClient from "./ProductCategoryClient";
 
 const SITE_NAME = "ShondhiBazar";
@@ -13,22 +12,11 @@ const DEFAULT_TITLE = `Shop All Products | ${SITE_NAME}`;
 const DEFAULT_DESCRIPTION =
   "Browse fresh produce, groceries, and artisan products from ShondhiBazar — filter by category, price, and more.";
 
-function resolveCategoryDisplay(categoryParam) {
-  if (!categoryParam || categoryParam.toLowerCase() === "all products") return null;
-
-  const catLower = categoryParam.toLowerCase();
-  const match = categories.find((c) => c.name.toLowerCase() === catLower);
-  const name = match?.name || categoryParam;
-  const bengali = match?.bengali ? ` (${match.bengali})` : "";
-  return `${name}${bengali}`;
-}
-
 export async function generateMetadata({ searchParams }) {
   const params = await searchParams;
   const rawCategory = Array.isArray(params?.category) ? params.category[0] : params?.category;
-  const display = resolveCategoryDisplay(rawCategory);
 
-  if (!display) {
+  if (!rawCategory || rawCategory.toLowerCase() === "all products") {
     return {
       title: DEFAULT_TITLE,
       description: DEFAULT_DESCRIPTION,
@@ -41,8 +29,8 @@ export async function generateMetadata({ searchParams }) {
     };
   }
 
-  const title = `${display} | ${SITE_NAME}`;
-  const description = `Shop ${display} at ${SITE_NAME} — fresh produce, groceries, and artisan products, delivered.`;
+  const title = `${rawCategory} | ${SITE_NAME}`;
+  const description = `Shop ${rawCategory} at ${SITE_NAME} — fresh produce, groceries, and artisan products, delivered.`;
   const canonicalPath = `/product-category?category=${encodeURIComponent(rawCategory)}`;
 
   return {
@@ -60,3 +48,4 @@ export async function generateMetadata({ searchParams }) {
 export default function ProductCategoryPage() {
   return <ProductCategoryClient />;
 }
+

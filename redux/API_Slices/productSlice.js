@@ -17,7 +17,7 @@ export const fetchProducts = createAsyncThunk(
         category: product.category?.name || "UNCATEGORIZED",
         description: product.description,
         isFeatured: !!product.is_featured,
-        image: product.images?.length > 0 ? resolveMediaUrl(product.images[0].image_url) : "/placeholder.png",
+        image: product.images?.length > 0 ? resolveMediaUrl(product.images[0].image_url) : "/placeholder.svg",
         sizes: product.variants.map(variant => ({
           id: variant.id,
           size: variant.size || variant.name,

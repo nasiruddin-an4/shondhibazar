@@ -1,4 +1,34 @@
 import { API_Query } from "./APIQuery";
+import { resolveMediaUrl } from "@/lib/resolveMediaUrl";
+
+// Normalise a single raw API product into the shape that ProductCard, CartDrawer,
+// and the rest of the frontend expect (sizes, image, price.min/max).
+function normalizeProduct(product) {
+  const variants = product.variants || [];
+  const prices = variants.map((v) => parseFloat(v.price)).filter((p) => !isNaN(p));
+  return {
+    id: product.id,
+    slug: product.slug,
+    name: product.name,
+    category: product.category?.name || "UNCATEGORIZED",
+    description: product.description,
+    isFeatured: !!product.is_featured,
+    image:
+      product.images?.length > 0
+        ? resolveMediaUrl(product.images[0].image_url)
+        : "/placeholder.svg",
+    sizes: variants.map((variant) => ({
+      id: variant.id,
+      size: variant.size || variant.name,
+      price: parseFloat(variant.price),
+      sku: variant.sku,
+    })),
+    price: {
+      min: prices.length ? Math.min(...prices) : 0,
+      max: prices.length ? Math.max(...prices) : 0,
+    },
+  };
+}
 
 export const ecommerceApi = API_Query.injectEndpoints({
   endpoints: (builder) => ({
@@ -19,10 +49,23 @@ export const ecommerceApi = API_Query.injectEndpoints({
           params,
         };
       },
+      transformResponse(response) {
+        // The API may return { data: [...], total: N } or a plain array.
+        const raw = Array.isArray(response) ? response : response.data || [];
+        const total = Array.isArray(response) ? raw.length : (response.total ?? raw.length);
+        return {
+          data: raw.map(normalizeProduct),
+          total,
+        };
+      },
       providesTags: ["Product"],
     }),
     getProductBySlug: builder.query({
       query: (slug) => `catalog/products/${slug}`,
+      transformResponse(response) {
+        // The API returns the raw product object, normalize it.
+        return normalizeProduct(response);
+      },
       providesTags: (result, error, slug) => [{ type: "Product", id: slug }],
     }),
 
